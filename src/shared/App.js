@@ -31,13 +31,12 @@ class App extends Component {
                 </Helmet>
 
 
-                <Card elevation={24} className={classes.card}>
+                <div >
                     <Canvas />
 
                     <Controls />
 
-                    {this.props.sliderValue}
-                </Card>
+                </div>
             </>
         );
     }
@@ -48,9 +47,6 @@ const styles = theme => ({
 
     },
 
-    card: {
-        padding: 20,
-    }
 })
 
 

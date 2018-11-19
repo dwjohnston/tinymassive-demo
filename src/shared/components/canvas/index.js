@@ -10,7 +10,8 @@ class Canvas extends Component {
         super(props);
 
         this.ref = React.createRef();
-        this.refLarge = React.createRef();
+        this.refLargeLeft = React.createRef();
+        this.refLargeRight = React.createRef();
 
         this.state = {
         };
@@ -25,7 +26,9 @@ class Canvas extends Component {
 
     componentDidMount() {
         const context = this.ref.current.getContext("2d");
-        const context2 = this.refLarge.current.getContext("2d");
+        const context2 = this.refLargeLeft.current.getContext("2d");
+        const context3 = this.refLargeLeft.current.getContext("2d");
+
         const draw = () => {
 
             const randA = randomInt(0, 76);
@@ -54,15 +57,12 @@ class Canvas extends Component {
         const { classes } = this.props;
         return <div className={classes.root}>
 
-            <p>
-                Actual 77 x 13 canvas
-            </p>
-            <canvas width="77" height="13" ref={this.ref} />
+            <canvas width="77" height="13" ref={this.ref} className={classes.fixed} />
 
-            <p>
-                770 x 130 canvas for better viewing
-            </p>
-            <canvas width="770" height="130" ref={this.refLarge} />
+            <div className={classes.canvasContainer}>
+                <canvas width="390" height="90" ref={this.refLargeLeft} />
+                <canvas width="380" height="130" ref={this.refLargeRight} />
+            </div>
 
         </div>;
     }
@@ -70,10 +70,19 @@ class Canvas extends Component {
 
 const styles = {
     root: {
-        border: "solid 2px green",
-        padding: 10,
-        margin: 10,
+        padding: "20px 0",
     },
+
+    fixed: {
+        position: "fixed",
+        left: 0,
+        top: 0,
+    },
+
+    canvasContainer: {
+        display: "flex",
+        flexFlow: "row wrap",
+    }
 };
 
 
