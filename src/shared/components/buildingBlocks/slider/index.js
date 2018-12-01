@@ -6,11 +6,13 @@ import MuiSlider from '@material-ui/lab/Slider';
 import { Typography } from '@material-ui/core';
 
 import PropTypes from 'prop-types';
-
+import { round } from "davids-toolbox";
 class Slider extends Component {
     constructor(props) {
         super(props);
         this.state = { value: props.initialValue };
+
+        props.onChange(props.id, props.initialValue);
     }
 
     handleChange = (e, v) => {
@@ -33,7 +35,8 @@ class Slider extends Component {
             aria-labelledby={`label-${id}`}
         />
         </div>
-            <Typography id={`label-${id}`}>{label}</Typography>
+        <Typography id={`value-${id}`}>{Number.parseFloat(this.state.value).toPrecision(3)}</Typography>
+        <Typography id={`label-${id}`}>{label}</Typography>
 
         </div >;
     }
@@ -45,7 +48,7 @@ Slider.propTypes = {
     initialValue: PropTypes.number,
     min: PropTypes.number,
     max: PropTypes.number,
-    step: PropTypes.step,
+    step: PropTypes.number,
     label: PropTypes.string,
     id: PropTypes.string,
     onChange: PropTypes.func
@@ -60,7 +63,8 @@ const styles = {
     },
     sliderWrapper: {
         display: 'flex',
-        height: 300,
+        height: 150,
+        margin: 10,
     },
     slider: {
         padding: '0px 22px',

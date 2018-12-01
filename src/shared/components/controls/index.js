@@ -7,6 +7,7 @@ import Slider from "../buildingBlocks/slider";
 
 import { connect } from 'react-redux';
 import { sliderUpdate } from '../../actions/sliderChange';
+import Sine from './groups/Sine';
 
 
 class Controls extends Component {
@@ -25,28 +26,24 @@ class Controls extends Component {
 
         const { classes } = this.props;
         return <div className={classes.root}>
+            <Sine
+                groupName="sine1"
+                color="rgba(200, 0, 0, 0.8)"
+                initValues={{
+                    speed: 0.1,
+                    freq: 1.3,
+                    amp: 0.5
 
-            <Slider
-                classes={{ root: classes.sliderRoot, container: classes.slider }}
-                initialValue={this.state.value}
-                onChange={this.handleChange}
-                min={1}
-                max={10}
-                step={1}
-                label="M"
-                id="M"
+                }}
             />
+            <Sine
+                groupName="sine2"
+                color="rgba(0, 200, 0, 0.8)"
+                initValues={{
+                    speed: -0.1,
+                    freq: 1,
 
-
-            <Slider
-                classes={{ root: classes.sliderRoot, container: classes.slider }}
-                initialValue={this.state.value}
-                onChange={this.handleChange}
-                min={1}
-                max={10}
-                step={1}
-                label="C"
-                id="C"
+                }}
             />
         </div>;
     }
@@ -56,6 +53,7 @@ class Controls extends Component {
 const styles = {
     root: {
         display: "flex",
+        flexFlow: "column nowrap",
     }
 };
 

@@ -14,7 +14,16 @@ const Main = ({ classes }) => {
 };
 
 const styles = {
-    root: {},
+    root: {
+        display: "flex",
+        flexFlow: "row nowrap",
+
+        "& >*": {
+            border: "solid 2px black",
+            padding: "10px",
+            margin: "10px",
+        }
+    },
 };
 
 export default withStyles(styles)(
