@@ -36,6 +36,7 @@ class Controls extends Component {
 
                 }}
             />
+
             <Sine
                 groupName="sine2"
                 color="rgba(0, 200, 0, 0.8)"
@@ -43,8 +44,10 @@ class Controls extends Component {
                     speed: -0.1,
                     freq: 1,
 
+
                 }}
             />
+
         </div>;
     }
 }

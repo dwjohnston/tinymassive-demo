@@ -4,12 +4,12 @@ import React, {
 import { withStyles } from '@material-ui/core/styles';
 import { randomInt } from "davids-toolbox";
 import { connect } from 'react-redux';
-
+import xolor from "xolor";
 
 const HEIGHT = 13;
 const WIDTH = 77;
-const N_GRID_GRAIN = 8;
-const GRID_GRAIN_SIZE = 1;
+const N_GRID_GRAIN = 4;
+const GRID_GRAIN_SIZE = 2;
 
 const MAIN_GRAIN_SIZE = 8;
 
@@ -31,7 +31,7 @@ function sineAdjust(t, x, amp, freq) {
     return Math.sin(((t + x) * 4 / WIDTH) * Math.PI * freq) * (amp * HEIGHT);
 }
 
-function getPixels(t, m, c, amp, freq) {
+function getPixels(t, color, m, c, amp, freq) {
 
     let array = [];
 
@@ -42,6 +42,7 @@ function getPixels(t, m, c, amp, freq) {
             array.push({
                 x: i,
                 y: y,
+                color: color,
             });
         }
 
@@ -50,19 +51,38 @@ function getPixels(t, m, c, amp, freq) {
     return array;
 }
 
-function getPixelsGrid(t, m, c, amp, freq) {
+function calcForSineGrid(t, color, m, c, amp, freq) {
 
     let array = [];
 
 
     for (let i = 0; i < WIDTH * N_GRID_GRAIN; i++) {
         const y = Math.floor(m * N_GRID_GRAIN * i + c * N_GRID_GRAIN) + sineAdjust(t * N_GRID_GRAIN, i, amp * N_GRID_GRAIN, freq / N_GRID_GRAIN);
-        if (y < HEIGHT * N_GRID_GRAIN) {
-            array.push({
-                x: i,
-                y: y,
-            });
-        }
+        array.push({
+            x: i,
+            y: y,
+            color: color,
+        });
+
+    }
+
+    return array;
+}
+
+function calcForModGrid(t, group, mod) {
+
+    let array = [];
+    const { m, c, amp, freq, color } = group;
+    for (let i = 0; i < WIDTH * N_GRID_GRAIN; i++) {
+
+        const adjustedSine = group.freq + group.freq * sineAdjust(i, 0, (group.modAmp / HEIGHT), group.modFreq);
+
+        const y = Math.floor(m * N_GRID_GRAIN * i + c * N_GRID_GRAIN) + sineAdjust(group.speed * t * N_GRID_GRAIN, i, amp * N_GRID_GRAIN, adjustedSine / N_GRID_GRAIN);
+        array.push({
+            x: i,
+            y: y,
+            color: color,
+        });
 
     }
 
@@ -91,14 +111,18 @@ function drawCanvas(pixels, color, small, large) {
     }
 }
 
-function drawCanvasGrid(pixels, color, grid) {
-
-    grid.fillStyle = color;
-
+function drawCanvasGrid(pixels, grid) {
     for (let pixel of pixels) {
+        grid.fillStyle = pixel.color;
         grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, GRID_GRAIN_SIZE);
     }
 }
+
+
+function averageColors(str1, str2, position) {
+    return xolor(str1).gradient(str2, position < 1 && position > 0 ? position : 1).toString();
+}
+
 class Canvas extends Component {
     constructor(props) {
         super(props);
@@ -114,6 +138,11 @@ class Canvas extends Component {
     }
 
 
+
+    draw() {
+
+
+    }
     shouldComponentUpdate() {
         return false;
     }
@@ -125,20 +154,49 @@ class Canvas extends Component {
 
         let t = 0;
 
-        const draw = () => {
+        function draw() {
             //Clear canvases
             clearCanvas(context, context2, context3);
 
-            Object.values(this.props.groups).forEach(group => {
-                const array = getPixels(t * group.speed, group.m, group.c, group.amp, group.freq);
-                const arrayGrid = getPixelsGrid(t * group.speed, group.m, group.c, group.amp, group.freq);
+            const arrays = [];
+            const arrayGrids = [];
+            Object.values(this.props.groups).forEach((group, i) => {
+                arrays.push(getPixels(t * group.speed, group.color, group.m, group.c, group.amp, group.freq));
+                //arrayGrids.push(calcForSineGrid(t * group.speed, group.color, group.m, group.c, group.amp, group.freq));
+                arrayGrids.push(calcForModGrid(t, group));
 
             });
 
-            Object.values(this.props.groups).forEach(group => {
-                drawCanvas(array, group.color, context, context2);
-                drawCanvasGrid(arrayGrid, group.color, context3);
+            const moreArrayGrids = [];
+            // for (let i = 0; i < arrayGrids[0].length; i++) {
+
+            //     let a = arrayGrids[0][i];
+            //     let b = arrayGrids[1][i];
+
+            //     let pixels = [];
+            //     [a, b] = (a.y >= b.y) ? [a, b] : [b, a];
+
+            //     for (let j = b.y + 1; j < a.y; j++) {
+            //         pixels.push({
+            //             x: i,
+            //             y: j,
+            //             color: averageColors(a.color, b.color, (a.y - j) / a.y)
+            //         })
+            //     }
+
+            //     moreArrayGrids.push(...pixels);
+            // }
+
+
+            const toDraw = [...arrayGrids[0], ...arrayGrids[1], ...moreArrayGrids];
+
+
+            Object.values(this.props.groups).forEach((group, i) => {
+                drawCanvas(arrays[i], group.color, context, context2);
             });
+
+            drawCanvasGrid(toDraw, context3);
+
 
 
 
@@ -146,6 +204,8 @@ class Canvas extends Component {
             window.requestAnimationFrame(draw);
         }
 
+
+        draw = draw.bind(this);
         window.requestAnimationFrame(draw);
     }
 
@@ -196,7 +256,7 @@ const mapStateToProps = (
     ownProps
 ) => {
     return {
-        groups: state.groups
+        groups: [state.groups.sine1, state.groups.sine2],
     };
 };
 

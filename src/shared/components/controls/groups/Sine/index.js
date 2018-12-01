@@ -24,73 +24,108 @@ class Controls extends Component {
     }
     render() {
 
-        const { classes, initValues } = this.props;
+        const { classes, initValues = {}, displayValues = {} } = this.props;
 
-        const { m = 0, c = 6, amp = 1, freq = 1, speed = 0.5 } = initValues;
-        return <div className={classes.root}>
+        const { m = 0, c = 6, amp = 1, freq = 1, speed = 0.5, modAmp = 0.1, modFreq = 3 } = initValues;
+        const { m: displayM = true, c: displayC = true, amp: displayAmp = true, freq: displayFreq = true, speed: displaySpeed = true } = displayValues;
 
-            <Slider
-                classes={{ root: classes.sliderRoot, container: classes.slider }}
-                initialValue={m}
-                onChange={this.handleChange}
-                min={-0.2}
-                max={0.2}
-                step={0.005}
-                label="m"
-                id="m"
-            />
+        return (
+            <div > <h2> {this.props.groupName}</h2>
+                <div className={classes.root}>
 
 
-            <Slider
-                classes={{ root: classes.sliderRoot, container: classes.slider }}
-                initialValue={c}
-                onChange={this.handleChange}
-                min={1}
-                max={10}
-                step={1}
-                label="c"
-                id="c"
-            />
+                    {displayM && <Slider
+                        classes={{ root: classes.sliderRoot, container: classes.slider }}
+                        initialValue={m}
+                        onChange={this.handleChange}
+                        min={-0.2}
+                        max={0.2}
+                        step={0.005}
+                        label="m"
+                        id="m"
+                    />}
 
-            <Slider
-                classes={{ root: classes.sliderRoot, container: classes.slider }}
-                initialValue={amp}
-                onChange={this.handleChange}
-                min={0}
-                max={1}
-                step={0.1}
-                label="Amp"
-                id="amp"
-            />
 
-            <Slider
-                classes={{ root: classes.sliderRoot, container: classes.slider }}
-                initialValue={freq}
-                onChange={this.handleChange}
-                min={0.5}
-                max={4}
-                step={0.1}
-                label="Freq"
-                id="freq"
-            />
+                    {displayC && <Slider
+                        classes={{ root: classes.sliderRoot, container: classes.slider }}
+                        initialValue={c}
+                        onChange={this.handleChange}
+                        min={1}
+                        max={10}
+                        step={1}
+                        label="c"
+                        id="c"
+                    />}
 
-            <Slider
-                classes={{ root: classes.sliderRoot, container: classes.slider }}
-                initialValue={speed}
-                onChange={this.handleChange}
-                min={-1}
-                max={1}
-                step={0.1}
-                label="Speed"
-                id="speed"
-            />
+                    {displayAmp && <Slider
+                        classes={{ root: classes.sliderRoot, container: classes.slider }}
+                        initialValue={amp}
+                        onChange={this.handleChange}
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        label="Amp"
+                        id="amp"
+                    />}
 
-            <div style={{
-                backgroundColor: this.props.color,
-                width: 20,
-                height: 20,
-            }} />
-        </div>;
+                    {displayFreq && <Slider
+                        classes={{ root: classes.sliderRoot, container: classes.slider }}
+                        initialValue={freq}
+                        onChange={this.handleChange}
+                        min={0.5}
+                        max={4}
+                        step={0.1}
+                        label="Freq"
+                        id="freq"
+                    />}
+
+
+                    <div className={classes.modContainer}>
+
+                        mod
+                        {displayAmp && <Slider
+                            classes={{ root: classes.sliderRoot, container: classes.slider }}
+                            initialValue={modAmp}
+                            onChange={this.handleChange}
+                            min={0}
+                            max={0.5}
+                            step={0.001}
+                            label="Amp"
+                            id="modAmp"
+                        />}
+
+                        {displayFreq && <Slider
+                            classes={{ root: classes.sliderRoot, container: classes.slider }}
+                            initialValue={modFreq}
+                            onChange={this.handleChange}
+                            min={0.1}
+                            max={2}
+                            step={0.01}
+                            label="Freq"
+                            id="modFreq"
+                        />}
+
+                    </div>
+
+                    {displaySpeed && <Slider
+                        classes={{ root: classes.sliderRoot, container: classes.slider }}
+                        initialValue={speed}
+                        onChange={this.handleChange}
+                        min={-0.5}
+                        max={0.5}
+                        step={0.005}
+                        label="Speed"
+                        id="speed"
+                    />}
+
+                    {this.props.color && <div style={{
+                        backgroundColor: this.props.color,
+                        width: 20,
+                        height: 20,
+                    }} />}
+                </div>
+
+            </div>);
     }
 }
 
@@ -99,6 +134,11 @@ const styles = {
     root: {
         display: "flex",
         border: "dotted 2px black"
+    },
+
+    modContainer: {
+        display: "flex",
+        border: "solid 1px black",
     }
 };
 
