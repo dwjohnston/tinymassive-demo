@@ -43,7 +43,7 @@ class Canvas extends Component {
             context2.fillStyle = "rgba(255, 0, 0, 1)";
 
             context.fillRect(randA, randB, 2, 2);
-            context2.fillRect(randA * 10, randB * 10, this.props.sliderValue * 10, this.props.sliderValue * 10);
+            context2.fillRect(randA * 10, randB * 10, this.props.sliders.M * 10, this.props.sliders.C * 10);
             window.requestAnimationFrame(draw);
         }
 
@@ -92,7 +92,7 @@ const mapStateToProps = (
     ownProps
 ) => {
     return {
-        sliderValue: state.slider.value
+        sliders: state.slider
     };
 };
 

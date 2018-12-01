@@ -2,7 +2,7 @@ import React, {
     Component,
 } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import Slider from '@material-ui/lab/Slider';
+import Slider from "../buildingBlocks/slider";
 
 
 import { connect } from 'react-redux';
@@ -15,11 +15,11 @@ class Controls extends Component {
         this.state = { value: props.value };
     }
 
-    handleChange = (e, v) => {
+    handleChange = (id, v) => {
         this.setState({
             value: v
         });
-        this.props.sliderUpdate("slider", v)
+        this.props.sliderUpdate(id, v)
     }
     render() {
 
@@ -28,30 +28,37 @@ class Controls extends Component {
 
             <Slider
                 classes={{ root: classes.sliderRoot, container: classes.slider }}
-                vertical
-                value={this.state.value}
+                initialValue={this.state.value}
                 onChange={this.handleChange}
                 min={1}
                 max={10}
                 step={1}
+                label="M"
+                id="M"
+            />
+
+
+            <Slider
+                classes={{ root: classes.sliderRoot, container: classes.slider }}
+                initialValue={this.state.value}
+                onChange={this.handleChange}
+                min={1}
+                max={10}
+                step={1}
+                label="C"
+                id="C"
             />
         </div>;
     }
 }
 
+
 const styles = {
     root: {
-        display: 'flex',
-        height: 300,
-    },
-    slider: {
-        padding: '0px 22px',
-    },
-
-    sliderRoot: {
-        width: "auto",
+        display: "flex",
     }
 };
+
 
 
 const mapStateToProps = (

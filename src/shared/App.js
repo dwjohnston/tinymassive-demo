@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import './app.styl';
 
 import Helmet from 'react-helmet';
-import Canvas from "./components/canvas";
 
 import { Typography, Card, withStyles } from '@material-ui/core';
 
 import UniversalComponent from './components/UniversalComponent';
-import Controls from './components/controls';
 import { connect } from "react-redux";
+import Main from './components/Main';
 /**
  * The `App` component is the entry point for the react app.
  * It is rendered on the client as well as on the server.
@@ -30,13 +29,7 @@ class App extends Component {
                     <title>App Component | React Universal</title>
                 </Helmet>
 
-
-                <div >
-                    <Canvas />
-
-                    <Controls />
-
-                </div>
+                <Main />
             </>
         );
     }
