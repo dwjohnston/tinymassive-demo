@@ -72,30 +72,6 @@ class Controls extends Component {
             <div > <h2> {this.props.groupName}</h2>
                 <div className={classes.root}>
 
-
-                    {/* {displayM && <Slider
-                        classes={{ root: classes.sliderRoot, container: classes.slider }}
-                        initialValue={m}
-                        onChange={this.handleChange}
-                        min={-1 * mM}
-                        max={mM}
-                        step={mM / STEP_RATIO}
-                        label="m"
-                        id="m"
-                    />}
-
-
-                    {displayC && <Slider
-                        classes={{ root: classes.sliderRoot, container: classes.slider }}
-                        initialValue={c}
-                        onChange={this.handleChange}
-                        min={1}
-                        max={mC}
-                        step={1}
-                        label="c"
-                        id="c"
-                    />} */}
-
                     {displayAmp && <Slider
                         classes={{ root: classes.sliderRoot, container: classes.slider }}
                         initialValue={amp}
@@ -111,7 +87,7 @@ class Controls extends Component {
                         classes={{ root: classes.sliderRoot, container: classes.slider }}
                         initialValue={freq}
                         onChange={this.handleChange}
-                        min={mFreq / FREQ_RATIO}
+                        min={mFreq / (FREQ_RATIO)}
                         max={mFreq}
                         step={mFreq / STEP_RATIO}
                         label="Freq"
@@ -137,7 +113,7 @@ class Controls extends Component {
                             classes={{ root: classes.sliderRoot, container: classes.slider }}
                             initialValue={modFreq}
                             onChange={this.handleChange}
-                            min={mModFreq / FREQ_RATIO}
+                            min={mModFreq / (FREQ_RATIO * 5)}
                             max={mModFreq}
                             step={mModFreq / STEP_RATIO}
                             label="Freq"

@@ -8,6 +8,7 @@ import Slider from "../buildingBlocks/slider";
 import { connect } from 'react-redux';
 import { sliderUpdate } from '../../actions/sliderChange';
 import Sine from './groups/Sine';
+import Biker from './groups/Biker';
 
 
 class Controls extends Component {
@@ -36,11 +37,23 @@ class Controls extends Component {
                     modAmp: 0,
                     addAmp: 0,
 
+                    modFreq: 1,
+                    addFreq: 1,
+                }}
+
+                maxValues={{
+                    modAmp: 0.1,
+                    addAmp: 1,
+
+                    modFreq: 6,
+                    addFreq: 4,
                 }}
 
             />
 
-            <Sine
+            <Biker groupName="biker" />
+
+            {/* <Sine
                 groupName="sine2"
                 color="rgba(0, 200, 0, 0.2)"
                 inverse={true}
@@ -59,7 +72,7 @@ class Controls extends Component {
 
                 }}
 
-            />
+            /> */}
 
         </div>;
     }

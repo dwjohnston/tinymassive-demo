@@ -167,9 +167,10 @@ export function calcForModGrid(
         const adjustedSine = freq +
             group.freq * sineAdjust(
                 i,
-                0,//group.speed * t * N_GRID_GRAIN,
+                0, //group.speed * t * N_GRID_GRAIN,
                 (modAmp),
-                modFreq / N_GRID_GRAIN
+                modFreq / N_GRID_GRAIN,
+                //phaseOffset
             );
 
 
@@ -182,19 +183,19 @@ export function calcForModGrid(
 
         const add = sineAdjust(
             0,
-            // group.speed * t * N_GRID_GRAIN,
+            //group.speed * t * N_GRID_GRAIN,
             i,
             adjustAmp(i, addAmp, adjustedHeight),
             addFreq / N_GRID_GRAIN,
-            0)
-            ;
-
+            //0
+            //phaseOffset
+        );
         const fm = sineAdjust(
             group.speed * t * N_GRID_GRAIN,
             i,
             adjustAmp(i, amp, adjustedHeight),
             adjustedSine / N_GRID_GRAIN,
-            phaseOffset
+            //phaseOffset
         );
 
         const y = Math.ceil(

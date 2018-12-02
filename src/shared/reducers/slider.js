@@ -1,7 +1,6 @@
 import SLIDER_UPDATE, { GROUP_UPDATE } from "../actions/sliderChange";
 const initialState = {
-    m: 5,
-    c: 5
+
 };
 
 

@@ -25,7 +25,7 @@ export const MAIN_GRAIN_SIZE = 8;
 
 //export const LEFT_PIXELS_TRUNCATE = [5, 6, 6, 5];
 export const LEFT_PIXELS_TRUNCATE = [7, 9, 8, 8, 7];
-export const RIGHT_PIXELS_TRUNCATE = [2, 2, 4, 5, 25];
+export const RIGHT_PIXELS_TRUNCATE = [4, 6, 6, 5, 17];
 
 export const LEFT_PIXELS_TRUNCATE_MAP = createTruncateMap(LEFT_PIXELS_TRUNCATE);
 export const RIGHT_PIXELS_TRUNCATE_MAP = createTruncateMap(RIGHT_PIXELS_TRUNCATE);
@@ -41,14 +41,28 @@ console.log(LEFT_PIXELS_TRUNCATE_MAP);
 
 
 
-function clearCanvas(small, ...grids) {
-    small.fillStyle = "rgba(0, 0, 0, 0.01)";
+function clearCanvas(small, control, ...grids) {
+
+
+    let clearColor = "rgba(0, 0, 0, 0.01)";
+    if (control) {
+
+        if (control.speed === 0) {
+            return;
+        }
+
+        let c = xolor([0, 0, 0]);
+        c.a = Math.pow(Math.abs(control.speed), 1.3) / 7;
+        clearColor = c.css;
+    }
+
+    small.fillStyle = clearColor;
     //large.fillStyle = "rgba(0, 0, 0, 0.01)";
     small.fillRect(0, 0, 77, 13);
 
 
     grids.forEach(grid => {
-        grid.fillStyle = "rgba(0, 0, 0, 0.01)";
+        grid.fillStyle = clearColor;
         grid.fillRect(0, 0, 770, 130);
     });
     //large.fillRect(0, 0, 770, 130);
@@ -70,42 +84,42 @@ function drawCanvasGrid(pixels, grid) {
         grid.fillStyle = pixel.color;
         grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * GRID_GRAIN_SIZE);
         switch (pixel.instructions) {
-            case "DRAW_DOWN": {
+        case "DRAW_DOWN": {
 
-                let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, (pixel.x + 1) * GRID_GRAIN_SIZE, HEIGHT_RIGHT * GRID_GRAIN_SIZE);
-                let color = xolor(pixel.color);
-                color.a = 0.01;
-                gradient.addColorStop(0, color.toString());
-                gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
-                grid.fillStyle = gradient;
-                grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, (HEIGHT_RIGHT - pixel.y) * GRID_GRAIN_SIZE);
+            let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, (pixel.x + 1) * GRID_GRAIN_SIZE, HEIGHT_RIGHT * GRID_GRAIN_SIZE);
+            let color = xolor(pixel.color);
+            color.a = 0.01;
+            gradient.addColorStop(0, color.toString());
+            gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
+            grid.fillStyle = gradient;
+            grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, (HEIGHT_RIGHT - pixel.y) * GRID_GRAIN_SIZE);
 
-                break;
-            }
+            break;
+        }
 
-            case "DRAW_UP": {
-                let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, (pixel.x + 1) * GRID_GRAIN_SIZE, 0);
-                gradient.addColorStop(0, pixel.color);
-                gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
-                grid.fillStyle = gradient;
-                grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * pixel.y * GRID_GRAIN_SIZE);
-                break;
-            }
+        case "DRAW_UP": {
+            let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, (pixel.x + 1) * GRID_GRAIN_SIZE, 0);
+            gradient.addColorStop(0, pixel.color);
+            gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
+            grid.fillStyle = gradient;
+            grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * pixel.y * GRID_GRAIN_SIZE);
+            break;
+        }
 
-            case "DRAW_RIGHT": {
+        case "DRAW_RIGHT": {
 
-                let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, 0, pixel.y + 1 * GRID_GRAIN_SIZE);
-                gradient.addColorStop(0, pixel.color);
-                gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
-                grid.fillStyle = gradient;
-                grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, -1 * (pixel.x) * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE);
+            let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, 0, pixel.y + 1 * GRID_GRAIN_SIZE);
+            gradient.addColorStop(0, pixel.color);
+            gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
+            grid.fillStyle = gradient;
+            grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, -1 * (pixel.x) * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE);
 
-                break;
-            }
+            break;
+        }
 
-            default: {
-                break;
-            }
+        default: {
+            break;
+        }
         }
     }
 }
@@ -152,7 +166,7 @@ class Canvas extends Component {
 
         function draw() {
             //Clear canvases
-            clearCanvas(context, contextRight, contextLeft);
+            clearCanvas(context, this.props.groups[0], contextRight, contextLeft);
 
             const arrays = [];
 
@@ -175,27 +189,8 @@ class Canvas extends Component {
             });
 
             const moreArrayGrids = [];
-            // for (let i = 0; i < arrayGrids[0].length; i++) {
 
-            //     let a = arrayGrids[0][i];
-            //     let b = arrayGrids[1][i];
-
-            //     let pixels = [];
-            //     [a, b] = (a.y >= b.y) ? [a, b] : [b, a];
-
-            //     for (let j = b.y + 1; j < a.y; j++) {
-            //         pixels.push({
-            //             x: i,
-            //             y: j,
-            //             color: averageColors(a.color, b.color, (a.y - j) / a.y)
-            //         })
-            //     }
-
-            //     moreArrayGrids.push(...pixels);
-            // }
-
-
-            const toDrawRight = [...arrayGridsRight[0], ...arrayGridsRight[1], ...moreArrayGrids];
+            const toDrawRight = [...arrayGridsRight[0], ...moreArrayGrids];
             const toDrawLeft = [...arrayGridsLeft[0]];
 
 
@@ -268,7 +263,7 @@ const mapStateToProps = (
     ownProps
 ) => {
     return {
-        groups: [state.groups.sine1, state.groups.sine2],
+        groups: [state.groups.sine1],
     };
 };
 
