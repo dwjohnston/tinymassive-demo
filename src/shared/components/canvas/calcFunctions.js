@@ -142,6 +142,19 @@ export function calcPhaseOffset(y) {
     return Math.sin(((y) / (HEIGHT_LEFT - 1)) * Math.PI) + Math.PI;
 }
 
+export function calcBiker(t, biker) {
+
+
+    const xPos = Math.round((t * biker.speed / 10)) % WIDTH_RIGHT;
+
+    return {
+
+        x: xPos,
+        y: biker.weight,
+        color: "rgba(200, 200, 255, 1)"
+    }
+}
+
 export function calcForModGrid(
     t,
     group,

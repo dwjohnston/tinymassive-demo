@@ -51,7 +51,16 @@ class Controls extends Component {
 
             />
 
-            <Biker groupName="biker" />
+            <Biker groupName="biker"
+                initValues={{
+                    weight: 6
+                }}
+
+                maxValues={{
+                    weight: 13,
+                }}
+
+            />
 
             {/* <Sine
                 groupName="sine2"

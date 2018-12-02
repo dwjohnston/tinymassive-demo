@@ -9,6 +9,7 @@ import {
     calcForModGrid,
     getPixels,
     calcPhaseOffset,
+    calcBiker,
 
 } from "./calcFunctions";
 
@@ -84,42 +85,42 @@ function drawCanvasGrid(pixels, grid) {
         grid.fillStyle = pixel.color;
         grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * GRID_GRAIN_SIZE);
         switch (pixel.instructions) {
-        case "DRAW_DOWN": {
+            case "DRAW_DOWN": {
 
-            let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, (pixel.x + 1) * GRID_GRAIN_SIZE, HEIGHT_RIGHT * GRID_GRAIN_SIZE);
-            let color = xolor(pixel.color);
-            color.a = 0.01;
-            gradient.addColorStop(0, color.toString());
-            gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
-            grid.fillStyle = gradient;
-            grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, (HEIGHT_RIGHT - pixel.y) * GRID_GRAIN_SIZE);
+                let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, (pixel.x + 1) * GRID_GRAIN_SIZE, HEIGHT_RIGHT * GRID_GRAIN_SIZE);
+                let color = xolor(pixel.color);
+                color.a = 0.01;
+                gradient.addColorStop(0, color.toString());
+                gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
+                grid.fillStyle = gradient;
+                grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, (HEIGHT_RIGHT - pixel.y) * GRID_GRAIN_SIZE);
 
-            break;
-        }
+                break;
+            }
 
-        case "DRAW_UP": {
-            let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, (pixel.x + 1) * GRID_GRAIN_SIZE, 0);
-            gradient.addColorStop(0, pixel.color);
-            gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
-            grid.fillStyle = gradient;
-            grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * pixel.y * GRID_GRAIN_SIZE);
-            break;
-        }
+            case "DRAW_UP": {
+                let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, (pixel.x + 1) * GRID_GRAIN_SIZE, 0);
+                gradient.addColorStop(0, pixel.color);
+                gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
+                grid.fillStyle = gradient;
+                grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * pixel.y * GRID_GRAIN_SIZE);
+                break;
+            }
 
-        case "DRAW_RIGHT": {
+            case "DRAW_RIGHT": {
 
-            let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, 0, pixel.y + 1 * GRID_GRAIN_SIZE);
-            gradient.addColorStop(0, pixel.color);
-            gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
-            grid.fillStyle = gradient;
-            grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, -1 * (pixel.x) * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE);
+                let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, 0, pixel.y + 1 * GRID_GRAIN_SIZE);
+                gradient.addColorStop(0, pixel.color);
+                gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
+                grid.fillStyle = gradient;
+                grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, -1 * (pixel.x) * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE);
 
-            break;
-        }
+                break;
+            }
 
-        default: {
-            break;
-        }
+            default: {
+                break;
+            }
         }
     }
 }
@@ -188,6 +189,9 @@ class Canvas extends Component {
 
             });
 
+            const bikerGrid = [];
+            bikerGrid.push(calcBiker(t, this.props.biker));
+
             const moreArrayGrids = [];
 
             const toDrawRight = [...arrayGridsRight[0], ...moreArrayGrids];
@@ -200,6 +204,8 @@ class Canvas extends Component {
             });
 
             drawCanvasGrid(toDrawRight, contextRight);
+            drawCanvasGrid(bikerGrid, contextRight);
+
 
             drawCanvasGrid(toDrawLeft, contextLeft);
 
@@ -264,6 +270,7 @@ const mapStateToProps = (
 ) => {
     return {
         groups: [state.groups.sine1],
+        biker: state.groups.biker,
     };
 };
 
