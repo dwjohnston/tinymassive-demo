@@ -7,7 +7,6 @@ const Main = ({ classes }) => {
     return (
         <main className={classes.root}>
             <Canvas />
-
             <Controls />
         </main>
     );
@@ -16,13 +15,9 @@ const Main = ({ classes }) => {
 const styles = {
     root: {
         display: "flex",
-        flexFlow: "row nowrap",
+        flexFlow: "column nowrap",
+        alignItems: "stretch",
 
-        "& >*": {
-            border: "solid 2px black",
-            padding: "10px",
-            margin: "10px",
-        }
     },
 };
 

@@ -8,12 +8,17 @@ import { groupUpdate } from "../../../../actions/sliderChange";
 import { connect } from 'react-redux';
 
 
+const STEP_RATIO = 50;
+const FREQ_RATIO = 4;
 class Controls extends Component {
     constructor(props) {
         super(props);
         this.state = { value: props.value };
 
         this.props.sliderUpdate(this.props.groupName, "color", this.props.color);
+        this.props.sliderUpdate(this.props.groupName, "inverse", this.props.inverse);
+        this.props.sliderUpdate(this.props.groupName, "instructions", this.props.instructions);
+
     }
 
     handleChange = (id, v) => {
@@ -24,23 +29,57 @@ class Controls extends Component {
     }
     render() {
 
-        const { classes, initValues = {}, displayValues = {} } = this.props;
+        const {
+            classes,
+            initValues = {},
+            displayValues = {},
+            maxValues = {}
+        } = this.props;
 
-        const { m = 0, c = 6, amp = 1, freq = 1, speed = 0.5, modAmp = 0.1, modFreq = 3 } = initValues;
-        const { m: displayM = true, c: displayC = true, amp: displayAmp = true, freq: displayFreq = true, speed: displaySpeed = true } = displayValues;
+        const {
+            m = 0,
+            c = 6,
+            amp = 1,
+            freq = 1,
+            speed = 0.5,
+            modAmp = 0.1,
+            modFreq = 3,
+            addFreq = 1,
+            addAmp = 0.2,
+        } = initValues;
+        const {
+            m: mM = 0.2,
+            c: mC = 10,
+            amp: mAmp = 1,
+            freq: mFreq = 1,
+            modAmp: mModAmp = 1,
+            modFreq: mModFreq = 1,
+            addAmp: mAddAmp = 0.25,
+            addFreq: mAddFreq = 4,
+            speed: mSpeed = 0.25
+        } = maxValues;
+        const {
+            m: displayM = false,
+            c: displayC = false,
+            addAmp: displayAddAmp = true,
+            addFreq: displayAddFreq = true,
+            amp: displayAmp = true,
+            freq: displayFreq = true,
+            speed: displaySpeed = true
+        } = displayValues;
 
         return (
             <div > <h2> {this.props.groupName}</h2>
                 <div className={classes.root}>
 
 
-                    {displayM && <Slider
+                    {/* {displayM && <Slider
                         classes={{ root: classes.sliderRoot, container: classes.slider }}
                         initialValue={m}
                         onChange={this.handleChange}
-                        min={-0.2}
-                        max={0.2}
-                        step={0.005}
+                        min={-1 * mM}
+                        max={mM}
+                        step={mM / STEP_RATIO}
                         label="m"
                         id="m"
                     />}
@@ -51,19 +90,19 @@ class Controls extends Component {
                         initialValue={c}
                         onChange={this.handleChange}
                         min={1}
-                        max={10}
+                        max={mC}
                         step={1}
                         label="c"
                         id="c"
-                    />}
+                    />} */}
 
                     {displayAmp && <Slider
                         classes={{ root: classes.sliderRoot, container: classes.slider }}
                         initialValue={amp}
                         onChange={this.handleChange}
                         min={0}
-                        max={1}
-                        step={0.1}
+                        max={mAmp}
+                        step={mAmp / STEP_RATIO}
                         label="Amp"
                         id="amp"
                     />}
@@ -72,9 +111,9 @@ class Controls extends Component {
                         classes={{ root: classes.sliderRoot, container: classes.slider }}
                         initialValue={freq}
                         onChange={this.handleChange}
-                        min={0.5}
-                        max={4}
-                        step={0.1}
+                        min={mFreq / FREQ_RATIO}
+                        max={mFreq}
+                        step={mFreq / STEP_RATIO}
                         label="Freq"
                         id="freq"
                     />}
@@ -88,8 +127,8 @@ class Controls extends Component {
                             initialValue={modAmp}
                             onChange={this.handleChange}
                             min={0}
-                            max={0.5}
-                            step={0.001}
+                            max={mModAmp}
+                            step={mModAmp / STEP_RATIO}
                             label="Amp"
                             id="modAmp"
                         />}
@@ -98,11 +137,38 @@ class Controls extends Component {
                             classes={{ root: classes.sliderRoot, container: classes.slider }}
                             initialValue={modFreq}
                             onChange={this.handleChange}
-                            min={0.1}
-                            max={2}
-                            step={0.01}
+                            min={mModFreq / FREQ_RATIO}
+                            max={mModFreq}
+                            step={mModFreq / STEP_RATIO}
                             label="Freq"
                             id="modFreq"
+                        />}
+
+                    </div>
+
+                    <div className={classes.modContainer}>
+
+                        add
+                        {displayAmp && <Slider
+                            classes={{ root: classes.sliderRoot, container: classes.slider }}
+                            initialValue={addAmp}
+                            onChange={this.handleChange}
+                            min={0}
+                            max={mAddAmp}
+                            step={mAddAmp / STEP_RATIO}
+                            label="Amp"
+                            id="addAmp"
+                        />}
+
+                        {displayFreq && <Slider
+                            classes={{ root: classes.sliderRoot, container: classes.slider }}
+                            initialValue={addFreq}
+                            onChange={this.handleChange}
+                            min={mAddFreq / FREQ_RATIO}
+                            max={mAddFreq}
+                            step={mAddFreq / STEP_RATIO}
+                            label="Freq"
+                            id="addFreq"
                         />}
 
                     </div>
@@ -111,9 +177,9 @@ class Controls extends Component {
                         classes={{ root: classes.sliderRoot, container: classes.slider }}
                         initialValue={speed}
                         onChange={this.handleChange}
-                        min={-0.5}
-                        max={0.5}
-                        step={0.005}
+                        min={-1 * mSpeed}
+                        max={mSpeed}
+                        step={mSpeed / STEP_RATIO}
                         label="Speed"
                         id="speed"
                     />}

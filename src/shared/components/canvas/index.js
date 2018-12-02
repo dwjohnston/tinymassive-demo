@@ -5,116 +5,108 @@ import { withStyles } from '@material-ui/core/styles';
 import { randomInt } from "davids-toolbox";
 import { connect } from 'react-redux';
 import xolor from "xolor";
+import {
+    calcForModGrid,
+    getPixels,
+    calcPhaseOffset,
 
-const HEIGHT = 13;
-const WIDTH = 77;
-const N_GRID_GRAIN = 4;
-const GRID_GRAIN_SIZE = 2;
+} from "./calcFunctions";
 
-const MAIN_GRAIN_SIZE = 8;
+export const HEIGHT_LEFT = 9;
+export const WIDTH_LEFT = 39;
 
-function getDrawArray(m, c) {
+export const HEIGHT_RIGHT = 13;
+export const WIDTH_RIGHT = 38;
 
-    let array = [...Array(WIDTH)].map(() => Array(HEIGHT));
-    for (let i = 0; i < WIDTH; i++) {
-        const y = Math.floor(m * i + c);
-        if (y < HEIGHT) {
-            array[i][y] = true;
-        }
+export const N_GRID_GRAIN = 1;
+export const GRID_GRAIN_SIZE = 8;
 
-    }
-    console.log(array);
-    return array;
+export const MAIN_GRAIN_SIZE = 8;
+
+//export const LEFT_PIXELS_TRUNCATE = [5, 6, 6, 5];
+export const LEFT_PIXELS_TRUNCATE = [7, 9, 8, 8, 7];
+export const RIGHT_PIXELS_TRUNCATE = [2, 2, 4, 5, 25];
+
+export const LEFT_PIXELS_TRUNCATE_MAP = createTruncateMap(LEFT_PIXELS_TRUNCATE);
+export const RIGHT_PIXELS_TRUNCATE_MAP = createTruncateMap(RIGHT_PIXELS_TRUNCATE);
+
+function createTruncateMap(array) {
+    return array.reduce((p, c, i) => {
+
+        return [...p, ...(new Array(c).fill(array.length - 1 - i))]
+    }, []);
 }
 
-function sineAdjust(t, x, amp, freq) {
-    return Math.sin(((t + x) * 4 / WIDTH) * Math.PI * freq) * (amp * HEIGHT);
-}
-
-function getPixels(t, color, m, c, amp, freq) {
-
-    let array = [];
+console.log(LEFT_PIXELS_TRUNCATE_MAP);
 
 
-    for (let i = 0; i < WIDTH; i++) {
-        const y = Math.floor(m * i + c) + sineAdjust(t, i, amp, freq);
-        if (y < HEIGHT) {
-            array.push({
-                x: i,
-                y: y,
-                color: color,
-            });
-        }
 
-    }
-
-    return array;
-}
-
-function calcForSineGrid(t, color, m, c, amp, freq) {
-
-    let array = [];
-
-
-    for (let i = 0; i < WIDTH * N_GRID_GRAIN; i++) {
-        const y = Math.floor(m * N_GRID_GRAIN * i + c * N_GRID_GRAIN) + sineAdjust(t * N_GRID_GRAIN, i, amp * N_GRID_GRAIN, freq / N_GRID_GRAIN);
-        array.push({
-            x: i,
-            y: y,
-            color: color,
-        });
-
-    }
-
-    return array;
-}
-
-function calcForModGrid(t, group, mod) {
-
-    let array = [];
-    const { m, c, amp, freq, color } = group;
-    for (let i = 0; i < WIDTH * N_GRID_GRAIN; i++) {
-
-        const adjustedSine = group.freq + group.freq * sineAdjust(i, 0, (group.modAmp / HEIGHT), group.modFreq);
-
-        const y = Math.floor(m * N_GRID_GRAIN * i + c * N_GRID_GRAIN) + sineAdjust(group.speed * t * N_GRID_GRAIN, i, amp * N_GRID_GRAIN, adjustedSine / N_GRID_GRAIN);
-        array.push({
-            x: i,
-            y: y,
-            color: color,
-        });
-
-    }
-
-    return array;
-}
-
-
-function clearCanvas(small, large, grid) {
-    small.fillStyle = "rgba(0, 0, 0, 0.1)";
-    large.fillStyle = "rgba(0, 0, 0, 0.1)";
-    grid.fillStyle = "rgba(0, 0, 0, 0.1)";
-
+function clearCanvas(small, ...grids) {
+    small.fillStyle = "rgba(0, 0, 0, 0.01)";
+    //large.fillStyle = "rgba(0, 0, 0, 0.01)";
     small.fillRect(0, 0, 77, 13);
-    large.fillRect(0, 0, 770, 130);
-    grid.fillRect(0, 0, 770, 130);
+
+
+    grids.forEach(grid => {
+        grid.fillStyle = "rgba(0, 0, 0, 0.01)";
+        grid.fillRect(0, 0, 770, 130);
+    });
+    //large.fillRect(0, 0, 770, 130);
 }
 
 function drawCanvas(pixels, color, small, large) {
 
     //Draw new array
     small.fillStyle = color;
-    large.fillStyle = color;
+    //large.fillStyle = color;
     for (let pixel of pixels) {
         small.fillRect(pixel.x, pixel.y, 2, 2);
-        large.fillRect(pixel.x * MAIN_GRAIN_SIZE, pixel.y * MAIN_GRAIN_SIZE, MAIN_GRAIN_SIZE, MAIN_GRAIN_SIZE);
+        //large.fillRect(pixel.x * MAIN_GRAIN_SIZE, pixel.y * MAIN_GRAIN_SIZE, MAIN_GRAIN_SIZE, MAIN_GRAIN_SIZE);
     }
 }
 
 function drawCanvasGrid(pixels, grid) {
     for (let pixel of pixels) {
         grid.fillStyle = pixel.color;
-        grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, GRID_GRAIN_SIZE);
+        grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * GRID_GRAIN_SIZE);
+        switch (pixel.instructions) {
+            case "DRAW_DOWN": {
+
+                let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, (pixel.x + 1) * GRID_GRAIN_SIZE, HEIGHT_RIGHT * GRID_GRAIN_SIZE);
+                let color = xolor(pixel.color);
+                color.a = 0.01;
+                gradient.addColorStop(0, color.toString());
+                gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
+                grid.fillStyle = gradient;
+                grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, (HEIGHT_RIGHT - pixel.y) * GRID_GRAIN_SIZE);
+
+                break;
+            }
+
+            case "DRAW_UP": {
+                let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, (pixel.x + 1) * GRID_GRAIN_SIZE, 0);
+                gradient.addColorStop(0, pixel.color);
+                gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
+                grid.fillStyle = gradient;
+                grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * pixel.y * GRID_GRAIN_SIZE);
+                break;
+            }
+
+            case "DRAW_RIGHT": {
+
+                let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, 0, pixel.y + 1 * GRID_GRAIN_SIZE);
+                gradient.addColorStop(0, pixel.color);
+                gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
+                grid.fillStyle = gradient;
+                grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, -1 * (pixel.x) * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE);
+
+                break;
+            }
+
+            default: {
+                break;
+            }
+        }
     }
 }
 
@@ -128,8 +120,11 @@ class Canvas extends Component {
         super(props);
 
         this.ref = React.createRef();
-        this.refLargeLeft = React.createRef();
-        this.refLargeGrid = React.createRef();
+        //this.refLargeLeft = React.createRef();
+
+
+        this.refLeftGrid = React.createRef();
+        this.refRightGrid = React.createRef();
 
         this.state = {
         };
@@ -149,21 +144,33 @@ class Canvas extends Component {
 
     componentDidMount() {
         const context = this.ref.current.getContext("2d");
-        const context2 = this.refLargeLeft.current.getContext("2d");
-        const context3 = this.refLargeGrid.current.getContext("2d");
+        //const context2 = this.refLargeLeft.current.getContext("2d");
+        const contextLeft = this.refLeftGrid.current.getContext("2d");
+        const contextRight = this.refRightGrid.current.getContext("2d");
 
         let t = 0;
 
         function draw() {
             //Clear canvases
-            clearCanvas(context, context2, context3);
+            clearCanvas(context, contextRight, contextLeft);
 
             const arrays = [];
-            const arrayGrids = [];
+
+            const arrayGridsLeft = [];
+            const arrayGridsRight = [];
             Object.values(this.props.groups).forEach((group, i) => {
+
+
                 arrays.push(getPixels(t * group.speed, group.color, group.m, group.c, group.amp, group.freq));
                 //arrayGrids.push(calcForSineGrid(t * group.speed, group.color, group.m, group.c, group.amp, group.freq));
-                arrayGrids.push(calcForModGrid(t, group));
+
+                arrayGridsLeft.push(calcForModGrid(t, group, HEIGHT_LEFT, WIDTH_LEFT, true));
+                const lastPixel = arrayGridsLeft[i][arrayGridsLeft.length - 1];
+
+                const phaseOffset = calcPhaseOffset(lastPixel.y);
+                arrayGridsRight.push(calcForModGrid(t, group, HEIGHT_RIGHT, WIDTH_RIGHT, false, phaseOffset));
+
+
 
             });
 
@@ -188,14 +195,18 @@ class Canvas extends Component {
             // }
 
 
-            const toDraw = [...arrayGrids[0], ...arrayGrids[1], ...moreArrayGrids];
+            const toDrawRight = [...arrayGridsRight[0], ...arrayGridsRight[1], ...moreArrayGrids];
+            const toDrawLeft = [...arrayGridsLeft[0]];
+
 
 
             Object.values(this.props.groups).forEach((group, i) => {
-                drawCanvas(arrays[i], group.color, context, context2);
+                drawCanvas(arrays[i], group.color, context);
             });
 
-            drawCanvasGrid(toDraw, context3);
+            drawCanvasGrid(toDrawRight, contextRight);
+
+            drawCanvasGrid(toDrawLeft, contextLeft);
 
 
 
@@ -219,9 +230,8 @@ class Canvas extends Component {
             <canvas width="77" height="13" ref={this.ref} className={classes.fixed} />
 
             <div className={classes.canvasContainer}>
-                <canvas width={WIDTH * MAIN_GRAIN_SIZE} height={HEIGHT * MAIN_GRAIN_SIZE} ref={this.refLargeLeft} />
-                <canvas width={WIDTH * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refLargeGrid} />
-
+                <canvas width={WIDTH_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refLeftGrid} />
+                <canvas width={WIDTH_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refRightGrid} />
             </div>
 
         </div>;
@@ -244,8 +254,10 @@ const styles = {
     },
 
     canvasContainer: {
+
         display: "flex",
-        flexFlow: "column nowrap",
+        flexFlow: "row nowrap",
+        alignItems: "flex-end",
     }
 };
 

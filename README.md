@@ -1,4 +1,13 @@
 # React SSR Template
+
+## Deployment to Heroku
+
+- `heroku container:push web -a=tinymassive`
+- `heroku container:release web -a=tinymassive`
+
+
+
+
 This project provides a template for React 16 (Fiber) using server
 side rendering.
 
