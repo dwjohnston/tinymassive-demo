@@ -3,6 +3,10 @@ import helmet from 'helmet';
 import shrinkRay from 'shrink-ray';
 import { join } from 'path';
 import { log } from 'winston';
+import http from "http";
+import socketio from "socket.io";
+const io = socketio();
+
 
 /**
  * Configures hot reloading and assets paths for local development environment.
@@ -66,3 +70,19 @@ if (isDevelopment) {
 }
 
 app.listen(app.get('port'), () => log('info', `Server listening on port ${app.get('port')}...`));
+
+
+
+io.on('connection', function (client) {
+    console.log('a user connected');
+
+    client.on('subscribeToTimer', (interval) => {
+        console.log('client is subscribing to timer with interval ', interval);
+        setInterval(() => {
+            client.emit('timer', new Date());
+        }, interval);
+    });
+});
+
+
+io.listen(8000);

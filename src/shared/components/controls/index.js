@@ -9,12 +9,20 @@ import { connect } from 'react-redux';
 import { sliderUpdate } from '../../actions/sliderChange';
 import Sine from './groups/Sine';
 import Biker from './groups/Biker';
+import { subscribeToTimer } from '../../services/socket';
+
 
 
 class Controls extends Component {
     constructor(props) {
         super(props);
         this.state = { value: props.value };
+
+        // subscribeToTimer((err, timestamp) => {
+        //     this.setState({
+        //         ts: timestamp
+        //     });
+        // })
     }
 
     handleChange = (id, v) => {
@@ -27,6 +35,7 @@ class Controls extends Component {
 
         const { classes } = this.props;
         return <div className={classes.root}>
+            {this.state.ts}
             <Sine
                 groupName="sine1"
                 color="rgba(200, 0, 0, 0.2)"

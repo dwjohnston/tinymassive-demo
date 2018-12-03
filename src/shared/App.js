@@ -4,10 +4,12 @@ import './app.styl';
 import Helmet from 'react-helmet';
 
 import { Typography, Card, withStyles } from '@material-ui/core';
+import { Switch, Route } from 'react-router-dom';
 
 import UniversalComponent from './components/UniversalComponent';
 import { connect } from "react-redux";
 import Main from './components/Main';
+import SocketPage from './components/SocketPage';
 /**
  * The `App` component is the entry point for the react app.
  * It is rendered on the client as well as on the server.
@@ -29,7 +31,11 @@ class App extends Component {
                     <title>App Component | React Universal</title>
                 </Helmet>
 
-                <Main />
+                <Switch>
+                    <Route exact path="/" component={Main} />
+                    <Route path="/socket" component={SocketPage} />
+                </Switch>
+
             </>
         );
     }
