@@ -7,6 +7,9 @@ import Slider from "../../../buildingBlocks/slider";
 import { groupUpdate } from "../../../../actions/sliderChange";
 
 import { connect } from 'react-redux';
+
+
+const PARAM_RATIO = 50;
 class BikerGroup extends Component {
     constructor(props) {
         super(props);
@@ -26,22 +29,21 @@ class BikerGroup extends Component {
         const {
             speed: initSpeed = 2,
             weight: initWeight = 10,
-        } = maxValues;
+        } = initValues;
 
         const {
             speed: maxSpeed = 5,
             weight: maxWeight = 20,
-        } = this.props;
+        } = maxValues;
 
         return <Layout label="Biker">
-
 
             <Slider
                 initialValue={initSpeed}
                 onChange={this.handleChange}
-                min={0}
+                min={maxSpeed * -1}
                 max={maxSpeed}
-                step={1}
+                step={maxSpeed / PARAM_RATIO}
                 label="Speed"
                 id="speed"
             />
@@ -49,9 +51,9 @@ class BikerGroup extends Component {
             <Slider
                 initialValue={initWeight}
                 onChange={this.handleChange}
-                min={1}
+                min={maxWeight / PARAM_RATIO}
                 max={maxWeight}
-                step={1}
+                step={maxWeight / PARAM_RATIO}
                 label="Weight"
                 id="weight"
             />

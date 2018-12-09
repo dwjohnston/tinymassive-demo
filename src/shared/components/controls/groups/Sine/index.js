@@ -6,10 +6,11 @@ import Slider from "../../../buildingBlocks/slider";
 import { groupUpdate } from "../../../../actions/sliderChange";
 
 import { connect } from 'react-redux';
+import Layout from '../Layout';
 
 
 const STEP_RATIO = 50;
-const FREQ_RATIO = 4;
+const FREQ_RATIO = 8;
 class Controls extends Component {
     constructor(props) {
         super(props);
@@ -69,7 +70,7 @@ class Controls extends Component {
         } = displayValues;
 
         return (
-            <div > <h2> {this.props.groupName}</h2>
+            <Layout label="sine">
                 <div className={classes.root}>
 
                     {displayAmp && <Slider
@@ -167,7 +168,7 @@ class Controls extends Component {
                     }} />}
                 </div>
 
-            </div>);
+            </Layout>);
     }
 }
 

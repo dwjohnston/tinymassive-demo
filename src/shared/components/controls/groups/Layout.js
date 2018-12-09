@@ -14,6 +14,7 @@ const GroupLayout = ({ classes, label, children }) => {
 const styles = {
     root: {
         display: "flex",
+        height: 200,
         border: "dotted 2px black"
     },
 

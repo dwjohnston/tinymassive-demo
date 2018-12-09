@@ -10,6 +10,7 @@ import { sliderUpdate } from '../../actions/sliderChange';
 import Sine from './groups/Sine';
 import Biker from './groups/Biker';
 import { subscribeToTimer } from '../../services/socket';
+import Color from './groups/Color';
 
 
 
@@ -46,29 +47,37 @@ class Controls extends Component {
                     modAmp: 0,
                     addAmp: 0,
 
-                    modFreq: 1,
+                    modFreq: 3,
                     addFreq: 1,
                 }}
 
                 maxValues={{
-                    modAmp: 0.1,
+                    modAmp: 0.3,
                     addAmp: 1,
 
-                    modFreq: 6,
-                    addFreq: 4,
+                    modFreq: 0.5,
+                    addFreq: 2,
                 }}
 
             />
 
             <Biker groupName="biker"
                 initValues={{
-                    weight: 6
+                    weight: 0.05,
+                    speed: 0.05,
                 }}
 
                 maxValues={{
-                    weight: 13,
+                    speed: 0.3,
+                    weight: 0.05,
                 }}
 
+            />
+
+            <Color groupName="color"
+                maxValues={{
+                    degrade: 5
+                }}
             />
 
             {/* <Sine
@@ -100,7 +109,7 @@ class Controls extends Component {
 const styles = {
     root: {
         display: "flex",
-        flexFlow: "column nowrap",
+        flexFlow: "row wrap",
     }
 };
 
