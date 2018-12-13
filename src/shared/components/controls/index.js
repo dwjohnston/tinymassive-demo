@@ -30,6 +30,9 @@ class Controls extends Component {
         this.setState({
             value: v
         });
+
+
+
         this.props.sliderUpdate(id, v)
     }
     render() {

@@ -72,17 +72,92 @@ if (isDevelopment) {
 app.listen(app.get('port'), () => log('info', `Server listening on port ${app.get('port')}...`));
 
 
+let activeClient = null;
+let nClients = 0;
+let clients = [];
 
-io.on('connection', function (client) {
-    console.log('a user connected');
+let timerInterval = null;
+let timeLeft = 0;
 
-    client.on('subscribeToTimer', (interval) => {
-        console.log('client is subscribing to timer with interval ', interval);
-        setInterval(() => {
-            client.emit('timer', new Date());
-        }, interval);
+
+function updateStatuses() {
+    console.log("update status", clients.length);
+
+    clients.forEach((client, i) => {
+        console.log(client.id, "::", i)
+        if (i === 0) {
+            console.log("active: ", client.id);
+
+            client.emit("status", {
+                active: true,
+                queuePosition: i
+            });
+
+
+            if (activeClient !== client) {
+                activeClient = client;
+                client.emit("take control");
+                timeLeft = 30;
+                setTimeout(() => {
+                    const c = clients.shift();
+                    clients.push(c);
+                    updateStatuses();
+                }, 30000);
+            }
+
+        }
+        else {
+            client.emit("status", {
+                active: false,
+                queuePosition: i
+            })
+        }
+
+
     });
+}
+
+
+timerInterval = setInterval(() => {
+    io.emit("timerUpdate", timeLeft--);
+}, 1000);
+
+io.on('connection', function (socket) {
+    console.log("connection", socket.id);
+    let addedUser = false;
+
+    socket.on("join queue", function () {
+        console.log("join queue", socket.id);
+        if (addedUser) return;
+        addedUser = true;
+        ++nClients;
+        clients.push(socket);
+
+        updateStatuses();
+
+    });
+
+    socket.on("update algo", (data) => {
+        console.log("update algo");
+        if (socket === activeClient) {
+            socket.broadcast.emit("receive update", data);
+        }
+    });
+
+    socket.on('disconnect', function () {
+        console.log("disconnect", socket.id);
+        if (addedUser) {
+            --nClients;
+            clients = clients.filter(c => c !== socket);
+            updateStatuses();
+
+        }
+    });
+
 });
+
+
+
 
 
 io.listen(8000);

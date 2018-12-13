@@ -2,12 +2,14 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Canvas from "..//canvas";
 import Controls from '..//controls';
+import SocketInfo from "../SocketPage";
 
 const Main = ({ classes }) => {
     return (
         <main className={classes.root}>
             <Canvas />
             <Controls />
+            <SocketInfo />
         </main>
     );
 };
