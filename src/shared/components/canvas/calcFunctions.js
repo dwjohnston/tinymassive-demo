@@ -13,23 +13,17 @@ import {
 import xolor from "xolor";
 
 function calcGridLeft(t, group) {
-
     let pixels = calcForModGrid(t, group, HEIGHT_LEFT, WIDTH_LEFT, true);
-
 }
 
-
 export function getDrawArray(m, c) {
-
     let array = [...Array(WIDTH_RIGHT)].map(() => Array(HEIGHT_RIGHT));
     for (let i = 0; i < WIDTH_RIGHT; i++) {
         const y = Math.floor(m * i + c);
         if (y < HEIGHT_RIGHT) {
             array[i][y] = true;
         }
-
     }
-    console.log(array);
     return array;
 }
 
@@ -50,20 +44,14 @@ export function getColor(t, i, color) {
         color.r.value * ((1 - color.r.amp) + sineAdjust(t, i, color.r.amp, color.r.freq)),
         color.g.value * ((1 - color.g.amp) + sineAdjust(t, i, color.g.amp, color.g.freq)),
         color.b.value * ((1 - color.b.amp) + sineAdjust(t, i, color.b.amp, color.b.freq))
-
     ])
-
     c.a = color.a.value * ((1 - color.a.amp) + sineAdjust(t, i, color.a.amp, color.a.freq));
-
-
     return c.css;
 }
 
 export function getPixels(t, color, m, c, amp, freq) {
 
     let array = [];
-
-
     for (let i = 0; i < WIDTH_RIGHT; i++) {
         const y = Math.floor(m * i + c) + sineAdjust(t, i, amp, freq);
         if (y < HEIGHT_RIGHT) {
@@ -73,7 +61,6 @@ export function getPixels(t, color, m, c, amp, freq) {
                 color: getColor(t, i, color),
             });
         }
-
     }
 
     return array;
@@ -82,8 +69,6 @@ export function getPixels(t, color, m, c, amp, freq) {
 export function calcForSineGrid(t, color, m, c, amp, freq) {
 
     let array = [];
-
-
     for (let i = 0; i < WIDTH_RIGHT * N_GRID_GRAIN; i++) {
         const y = Math.floor(m * N_GRID_GRAIN * i + c * N_GRID_GRAIN) + sineAdjust(t * N_GRID_GRAIN, i, amp * N_GRID_GRAIN, freq / N_GRID_GRAIN);
         array.push({
@@ -91,9 +76,7 @@ export function calcForSineGrid(t, color, m, c, amp, freq) {
             y: y,
             color: color,
         });
-
     }
-
     return array;
 }
 
@@ -125,7 +108,8 @@ export function calcForModGridOld(
                 group.speed * t * N_GRID_GRAIN,
                 i,
                 adjustAmp(i, amp, height, isLeft),
-                adjustedSine / N_GRID_GRAIN);
+                adjustedSine / N_GRID_GRAIN
+            );
 
         if (inverse) {
             array.push({
@@ -141,56 +125,42 @@ export function calcForModGridOld(
                 y: y,
                 color: color,
                 instructions: group.instructions,
-
             });
         }
-
-
     }
 
     return array;
 }
 
 export function calcPhaseOffset(y) {
-
-    if (y === 0) console.log("zero");
-
     return Math.sin(((y) / (HEIGHT_LEFT - 1)) * Math.PI) + Math.PI;
 }
 
 export function calcBiker(t, bikerGroup, bikerObj, grid) {
-
-
     const xPos = bikerObj.x;
 
     const gridA = grid[(Math.floor(xPos + WIDTH_RIGHT) + 1) % (WIDTH_RIGHT)];
     const gridB = grid[Math.floor(xPos + WIDTH_RIGHT) % (WIDTH_RIGHT)];
     const vector = (gridA.y - gridB.y) / 1;
 
-
     let dx, dy, y, color;
     if (bikerObj.y < gridB.y || bikerObj.vector > vector) {
-
         dx = bikerObj.dx;
         dy = bikerObj.dy - bikerGroup.weight;
         color = "rgba(200, 255, 200, 1)"
     }
     else {
-
         const angle = Math.atan(vector);
         dy = Math.abs(Math.sin(angle) * bikerGroup.speed);
         dx = Math.cos(angle) * bikerGroup.speed;
 
         y = gridB.y;
         color = "rgba(200, 200, 255, 1)"
-
     }
-
 
     return {
 
         x: ((bikerObj.x + dx + WIDTH_RIGHT) % WIDTH_RIGHT),
-        //y: bikerObj.y + dy,
         y: (y || bikerObj.y - dy),
         dx: dx,
         dy: dy,
@@ -211,7 +181,6 @@ export function calcForModGrid(
 
     let array = [];
     const { addAmp, addFreq, modAmp, modFreq, amp, freq, inverse } = group;
-
 
     for (let i = 0; i < (inverse ? height : width) * N_GRID_GRAIN; i++) {
 
@@ -275,12 +244,8 @@ export function calcForModGrid(
                 y: y,
                 color: getColor(t, i, color),
                 instructions: group.instructions,
-
             });
         }
-
-
     }
-
     return array;
 }

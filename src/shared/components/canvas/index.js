@@ -92,12 +92,25 @@ class Canvas extends Component {
         this.refRightGrid = React.createRef();
 
         this.state = {
+            displayYours: true,
+            displayTinyMassive: true,
         };
     }
 
-    shouldComponentUpdate() {
+    shouldComponentUpdate(prevProps, prevState) {
         //Important
+        if (prevState.displayTinyMassive != this.state.displayTinyMassive || prevState.displayYours != this.state.displayYours) {
+            return true;
+        }
         return false;
+    }
+
+    handleCheckboxChange = (e) => {
+
+        console.log(e.target.value, e.target.checked);
+        this.setState({
+            [e.target.value]: !this.state[e.target.value]
+        });
     }
 
     componentDidMount() {
@@ -161,12 +174,37 @@ class Canvas extends Component {
 
             <canvas width="77" height="13" ref={this.ref} className={classes.fixed} />
 
-            <div className={classes.canvasContainer}>
+            <div>
+                <label htmlFor="displayTinyMassive"> Display TinyMassive</label>
+                <input
+                    type="checkbox"
+                    onChange={this.handleCheckboxChange}
+                    value="displayTinyMassive"
+                    id="displayTinyMassive"
+                    checked={this.state.displayTinyMassive}
+                />
+
+                <label htmlFor="displayYours"> Display Yours</label>
+                <input
+                    type="checkbox"
+                    onChange={this.handleCheckboxChange}
+                    value="displayYours"
+                    id="displayYours"
+                    checked={this.state.displayYours}
+                />
+            </div>
+            <div
+                className={classes.canvasContainer}
+                style={{ display: this.state.displayTinyMassive ? "flex" : "none" }} >
+                <h2>Tiny Massive Display</h2>
                 <canvas width={WIDTH_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refMainLeftGrid} />
                 <canvas width={WIDTH_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refMainRightGrid} />
             </div>
 
-            <div className={classes.canvasContainer}>
+            <div
+                className={classes.canvasContainer}
+                style={{ display: this.state.displayYours ? "flex" : "none" }}>
+                <h2>Your Display</h2>
                 <canvas width={WIDTH_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refLeftGrid} />
                 <canvas width={WIDTH_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refRightGrid} />
             </div>
@@ -189,8 +227,11 @@ const styles = {
     },
 
     canvasContainer: {
+        "&>h2": {
+            flex: "0 0 100%"
+        },
         display: "flex",
-        flexFlow: "row nowrap",
+        flexFlow: "row wrap",
         alignItems: "flex-end",
     }
 };
