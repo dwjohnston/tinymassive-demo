@@ -14,18 +14,20 @@ import {
 } from "./calcFunctions";
 import { bikerMoveAction } from '../../actions/biker';
 
+//Size in pixels of the displays
 export const HEIGHT_LEFT = 9;
 export const WIDTH_LEFT = 39;
 
 export const HEIGHT_RIGHT = 13;
 export const WIDTH_RIGHT = 38;
 
-export const N_GRID_GRAIN = 1;
+//Size adjustment of our main display
+export const N_GRID_GRAIN = 1;  //We didn't end up using this functinality
 export const GRID_GRAIN_SIZE = 8;
-
 export const MAIN_GRAIN_SIZE = 8;
 
-//export const LEFT_PIXELS_TRUNCATE = [5, 6, 6, 5];
+//The hidden pixels on the left display. 
+//There are some on the right display too - just to make it look a bit smoother
 export const LEFT_PIXELS_TRUNCATE = [7, 9, 8, 8, 7];
 export const RIGHT_PIXELS_TRUNCATE = [4, 6, 6, 5, 17];
 
@@ -34,35 +36,23 @@ export const RIGHT_PIXELS_TRUNCATE_MAP = createTruncateMap(RIGHT_PIXELS_TRUNCATE
 
 function createTruncateMap(array) {
     return array.reduce((p, c, i) => {
-
         return [...p, ...(new Array(c).fill(array.length - 1 - i))]
     }, []);
 }
 
-console.log(LEFT_PIXELS_TRUNCATE_MAP);
-
-
-
 function clearCanvas(small, control, color, ...grids) {
-
-
     let clearColor = "rgba(0, 0, 0, 0.01)";
     if (control) {
-
         if (control.speed === 0) {
             return;
         }
-
         let c = xolor([0, 0, 0]);
         c.a = Math.pow(Math.abs(control.speed), 1.8) / color.degrade;
         clearColor = c.css;
     }
-
     small.fillStyle = clearColor;
     //large.fillStyle = "rgba(0, 0, 0, 0.01)";
     small.fillRect(0, 0, 77, 13);
-
-
     grids.forEach(grid => {
         grid.fillStyle = clearColor;
         grid.fillRect(0, 0, 770, 130);
@@ -88,62 +78,12 @@ function drawCanvasGrid(pixels, grid, yShift = 0) {
     }
 }
 
-function drawCanvasGridOld(pixels, grid) {
-    for (let pixel of pixels) {
-        grid.fillStyle = pixel.color;
-        grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * GRID_GRAIN_SIZE);
-        switch (pixel.instructions) {
-        case "DRAW_DOWN": {
-
-            let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, (pixel.x + 1) * GRID_GRAIN_SIZE, HEIGHT_RIGHT * GRID_GRAIN_SIZE);
-            let color = xolor(pixel.color);
-            color.a = 0.01;
-            gradient.addColorStop(0, color.toString());
-            gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
-            grid.fillStyle = gradient;
-            grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, (HEIGHT_RIGHT - pixel.y) * GRID_GRAIN_SIZE);
-
-            break;
-        }
-
-        case "DRAW_UP": {
-            let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, (pixel.x + 1) * GRID_GRAIN_SIZE, 0);
-            gradient.addColorStop(0, pixel.color);
-            gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
-            grid.fillStyle = gradient;
-            grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * pixel.y * GRID_GRAIN_SIZE);
-            break;
-        }
-
-        case "DRAW_RIGHT": {
-
-            let gradient = grid.createLinearGradient(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, 0, pixel.y + 1 * GRID_GRAIN_SIZE);
-            gradient.addColorStop(0, pixel.color);
-            gradient.addColorStop(1, "rgba(0, 0, 0, 0.01)");
-            grid.fillStyle = gradient;
-            grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, -1 * (pixel.x) * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE);
-
-            break;
-        }
-
-        default: {
-            break;
-        }
-        }
-    }
-}
-
-
-function averageColors(str1, str2, position) {
-    return xolor(str1).gradient(str2, position < 1 && position > 0 ? position : 1).toString();
-}
 
 class Canvas extends Component {
     constructor(props) {
         super(props);
 
         this.ref = React.createRef();
-        //this.refLargeLeft = React.createRef();
 
         this.refMainLeftGrid = React.createRef();
         this.refMainRightGrid = React.createRef();
@@ -153,23 +93,19 @@ class Canvas extends Component {
 
         this.state = {
         };
-
-
     }
 
-
-
-    draw() {
-
-
-    }
     shouldComponentUpdate() {
+        //Important
         return false;
     }
 
     componentDidMount() {
         const context = this.ref.current.getContext("2d");
-        //const context2 = this.refLargeLeft.current.getContext("2d");
+
+        const contextMainLeft = this.refMainLeftGrid.current.getContext("2d");
+        const contextMainRight = this.refMainRightGrid.current.getContext("2d");
+
         const contextLeft = this.refLeftGrid.current.getContext("2d");
         const contextRight = this.refRightGrid.current.getContext("2d");
 
@@ -191,25 +127,16 @@ class Canvas extends Component {
 
 
             arrays.push(getPixels(t * group.speed, this.props.color, group.m, group.c, group.amp, group.freq));
-            //arrayGrids.push(calcForSineGrid(t * group.speed, group.color, group.m, group.c, group.amp, group.freq));
-
             arrayGridLeft.push(...calcForModGrid(t, group, color, HEIGHT_LEFT, WIDTH_LEFT, true));
             const lastPixel = arrayGridLeft[arrayGridLeft.length - 1];
-
             const phaseOffset = calcPhaseOffset(lastPixel.y);
             arrayGridRight.push(...calcForModGrid(t, group, color, HEIGHT_RIGHT, WIDTH_RIGHT, false, phaseOffset));
-
-
             const bikerGrid = [];
             const bikerObj = calcBiker(t, this.props.biker, this.props.bikerObj, arrayGridRight);
             bikerGrid.push(bikerObj);
             this.props.updateBiker(bikerObj);
-
-
             const toDrawRight = [...arrayGridRight];
             const toDrawLeft = [...arrayGridLeft];
-
-
 
             Object.values(this.props.groups).forEach((group, i) => {
                 drawCanvas(arrays[i], group.color, context);
@@ -217,23 +144,15 @@ class Canvas extends Component {
 
             drawCanvasGrid(toDrawRight, contextRight);
             drawCanvasGrid(bikerGrid, contextRight, -1);
-
-
             drawCanvasGrid(toDrawLeft, contextLeft);
-
-
-
 
             t++;
             window.requestAnimationFrame(draw);
         }
 
-
         draw = draw.bind(this);
         window.requestAnimationFrame(draw);
     }
-
-
 
     render() {
 
@@ -259,9 +178,7 @@ class Canvas extends Component {
 const styles = {
     root: {
         padding: "20px 0",
-
         "& canvas": {
-            border: "dashed 1px black",
         }
     },
 
@@ -272,7 +189,6 @@ const styles = {
     },
 
     canvasContainer: {
-
         display: "flex",
         flexFlow: "row nowrap",
         alignItems: "flex-end",
