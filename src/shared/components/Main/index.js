@@ -3,13 +3,13 @@ import { withStyles } from '@material-ui/core/styles';
 import Canvas from "..//canvas";
 import Controls from '..//controls';
 import SocketInfo from "../SocketPage";
-
+import NoSSR from "react-no-ssr";
 const Main = ({ classes }) => {
     return (
         <main className={classes.root}>
             <Canvas />
             <Controls />
-            <SocketInfo />
+            <NoSSR> && <SocketInfo /></NoSSR>
         </main>
     );
 };

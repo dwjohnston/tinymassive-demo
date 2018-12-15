@@ -81,10 +81,10 @@ function drawCanvas(pixels, color, small, large) {
     }
 }
 
-function drawCanvasGrid(pixels, grid, color, t) {
+function drawCanvasGrid(pixels, grid, yShift = 0) {
     for (let pixel of pixels) {
         grid.fillStyle = pixel.color;
-        grid.fillRect(pixel.x * GRID_GRAIN_SIZE, pixel.y * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * GRID_GRAIN_SIZE);
+        grid.fillRect(pixel.x * GRID_GRAIN_SIZE, (pixel.y + yShift) * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * GRID_GRAIN_SIZE);
     }
 }
 
@@ -145,6 +145,8 @@ class Canvas extends Component {
         this.ref = React.createRef();
         //this.refLargeLeft = React.createRef();
 
+        this.refMainLeftGrid = React.createRef();
+        this.refMainRightGrid = React.createRef();
 
         this.refLeftGrid = React.createRef();
         this.refRightGrid = React.createRef();
@@ -214,7 +216,7 @@ class Canvas extends Component {
             });
 
             drawCanvasGrid(toDrawRight, contextRight);
-            drawCanvasGrid(bikerGrid, contextRight);
+            drawCanvasGrid(bikerGrid, contextRight, -1);
 
 
             drawCanvasGrid(toDrawLeft, contextLeft);
@@ -239,6 +241,11 @@ class Canvas extends Component {
         return <div className={classes.root}>
 
             <canvas width="77" height="13" ref={this.ref} className={classes.fixed} />
+
+            <div className={classes.canvasContainer}>
+                <canvas width={WIDTH_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refMainLeftGrid} />
+                <canvas width={WIDTH_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refMainRightGrid} />
+            </div>
 
             <div className={classes.canvasContainer}>
                 <canvas width={WIDTH_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refLeftGrid} />

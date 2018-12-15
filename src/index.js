@@ -5,6 +5,7 @@ import { join } from 'path';
 import { log } from 'winston';
 import http from "http";
 import socketio from "socket.io";
+import oHash from "object-hash";
 const io = socketio();
 
 
@@ -74,10 +75,14 @@ app.listen(app.get('port'), () => log('info', `Server listening on port ${app.ge
 
 let activeClient = null;
 let nClients = 0;
+
 let clients = [];
 
+let interval = null;
 let timerInterval = null;
 let timeLeft = 0;
+
+let currentState = null;
 
 
 function updateStatuses() {
@@ -90,7 +95,8 @@ function updateStatuses() {
 
             client.emit("status", {
                 active: true,
-                queuePosition: i
+                queuePosition: i,
+                queueSize: clients.length,
             });
 
 
@@ -98,10 +104,12 @@ function updateStatuses() {
                 activeClient = client;
                 client.emit("take control");
                 timeLeft = 30;
-                setTimeout(() => {
+                interval = setTimeout(() => {
                     const c = clients.shift();
                     clients.push(c);
                     updateStatuses();
+                    timeLeft = 30;
+
                 }, 30000);
             }
 
@@ -109,7 +117,9 @@ function updateStatuses() {
         else {
             client.emit("status", {
                 active: false,
-                queuePosition: i
+                queuePosition: i,
+                queueSize: clients.length,
+
             })
         }
 
@@ -133,13 +143,18 @@ io.on('connection', function (socket) {
         ++nClients;
         clients.push(socket);
 
+        socket.emit("receive update", currentState);
         updateStatuses();
 
     });
 
     socket.on("update algo", (data) => {
-        console.log("update algo");
+
+        console.log("update algo", socket.id);
         if (socket === activeClient) {
+            console.log("update algo - do update", oHash(data));
+            this.currentState = data;
+            socket.emit("receive update", data);
             socket.broadcast.emit("receive update", data);
         }
     });

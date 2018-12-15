@@ -4,15 +4,16 @@ import React, {
 import { withStyles } from '@material-ui/core/styles';
 import { subscribeToTimer, subscribeToStatus, disconnect, joinQueue, subscribeToTakeControl, updateOut, subscribeToReceiveUpdate } from '../../services/socket';
 import { connect } from 'react-redux';
-
+import oHash from "object-hash";
+import { recieveDataAction } from '../../actions/socket';
 class SocketPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            status: {}
+            status: {},
+            id: joinQueue(),
         };
 
-        joinQueue();
 
 
         subscribeToTimer((err, time) => {
@@ -28,9 +29,13 @@ class SocketPage extends Component {
         });
 
         subscribeToReceiveUpdate((err, data) => {
+
+            console.log("receive update", data);
             this.setState({
                 algoState: data
             })
+
+            this.props.updateForeign(data);
         });
 
 
@@ -51,19 +56,26 @@ class SocketPage extends Component {
     }
     render() {
 
-        const { wholeState } = this.props;
+        const { wholeState, classes } = this.props;
         const { status, timeLeft } = this.state;
         return <div>
 
             <h3> Queue Info </h3>
 
-            <div>
+            <div className={classes.info}>
                 <div>
                     {status.active ? "ACTIVE - YOU'RE LIVE!" : "IN QUEUE"}
                 </div>
+
+                <div> <strong> Socket ID </strong> {this.state.id}</div>
                 <div>
                     <strong> Queue Position </strong>
                     {status.queuePosition}
+                </div>
+
+                <div>
+                    <strong> Queue Size </strong>
+                    {status.queueSize}
                 </div>
 
                 <div>
@@ -74,13 +86,13 @@ class SocketPage extends Component {
 
                 <div>
 
-                    my state
-                    {JSON.stringify(wholeState)}
+                    <strong>my state</strong>
+                    {oHash(this.props.wholeState)}
                 </div>
 
                 <div>
-                    algo state
-                    {JSON.stringify(this.state.algoState)}
+                    <strong>algo state</strong>
+                    {oHash(this.state.algoState || {})}
                 </div>
 
 
@@ -92,6 +104,15 @@ class SocketPage extends Component {
 
 const styles = {
     root: {},
+    info: {
+        display: "flex",
+        flexFlow: "row wrap",
+        "&>*": {
+            border: "solid 1px black",
+            padding: 5,
+
+        }
+    }
 };
 
 
@@ -107,7 +128,7 @@ const mapStateToProps = (
 
 const mapDispatchToProps = dispatch => {
     return {
-
+        updateForeign: data => dispatch(recieveDataAction(data))
     };
 };
 export default connect(

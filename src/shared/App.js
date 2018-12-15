@@ -33,7 +33,6 @@ class App extends Component {
 
                 <Switch>
                     <Route exact path="/" component={Main} />
-                    <Route path="/socket" component={SocketPage} />
                 </Switch>
 
             </>
