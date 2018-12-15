@@ -60,17 +60,6 @@ function clearCanvas(small, control, color, ...grids) {
     //large.fillRect(0, 0, 770, 130);
 }
 
-function drawCanvas(pixels, color, small, large) {
-
-    //Draw new array
-    small.fillStyle = color;
-    //large.fillStyle = color;
-    for (let pixel of pixels) {
-        small.fillRect(pixel.x, pixel.y, 2, 2);
-        //large.fillRect(pixel.x * MAIN_GRAIN_SIZE, pixel.y * MAIN_GRAIN_SIZE, MAIN_GRAIN_SIZE, MAIN_GRAIN_SIZE);
-    }
-}
-
 function drawCanvasGrid(pixels, grid, yShift = 0) {
     for (let pixel of pixels) {
         grid.fillStyle = pixel.color;
@@ -106,8 +95,6 @@ class Canvas extends Component {
     }
 
     handleCheckboxChange = (e) => {
-
-        console.log(e.target.value, e.target.checked);
         this.setState({
             [e.target.value]: !this.state[e.target.value]
         });
@@ -127,33 +114,23 @@ class Canvas extends Component {
         function draw() {
             //Clear canvases
 
-            const group = this.props.groups[0]
-
-            const { color } = this.props;
-            clearCanvas(context, group, color, contextRight, contextLeft);
-
-            const arrays = [];
+            const { color, sine, biker, socketData, bikerObj, updateBiker } = this.props;
+            clearCanvas(context, sine, color, contextRight, contextLeft);
 
             const arrayGridLeft = [];
             const arrayGridRight = [];
 
-
-
-            arrays.push(getPixels(t * group.speed, this.props.color, group.m, group.c, group.amp, group.freq));
-            arrayGridLeft.push(...calcForModGrid(t, group, color, HEIGHT_LEFT, WIDTH_LEFT, true));
+            arrayGridLeft.push(...calcForModGrid(t, sine, color, HEIGHT_LEFT, WIDTH_LEFT, true));
             const lastPixel = arrayGridLeft[arrayGridLeft.length - 1];
             const phaseOffset = calcPhaseOffset(lastPixel.y);
-            arrayGridRight.push(...calcForModGrid(t, group, color, HEIGHT_RIGHT, WIDTH_RIGHT, false, phaseOffset));
+            arrayGridRight.push(...calcForModGrid(t, sine, color, HEIGHT_RIGHT, WIDTH_RIGHT, false, phaseOffset));
             const bikerGrid = [];
-            const bikerObj = calcBiker(t, this.props.biker, this.props.bikerObj, arrayGridRight);
+            const newBikerObj = calcBiker(t, biker, bikerObj, arrayGridRight);
             bikerGrid.push(bikerObj);
-            this.props.updateBiker(bikerObj);
+            updateBiker(newBikerObj);
+
             const toDrawRight = [...arrayGridRight];
             const toDrawLeft = [...arrayGridLeft];
-
-            Object.values(this.props.groups).forEach((group, i) => {
-                drawCanvas(arrays[i], group.color, context);
-            });
 
             drawCanvasGrid(toDrawRight, contextRight);
             drawCanvasGrid(bikerGrid, contextRight, -1);
@@ -243,10 +220,11 @@ const mapStateToProps = (
     ownProps
 ) => {
     return {
-        groups: [state.groups.sine1],
+        sine: state.groups.sine1,
         biker: state.groups.biker,
         bikerObj: state.biker,
-        color: state.groups.color
+        color: state.groups.color,
+        socketData: state.socket,
     };
 };
 
