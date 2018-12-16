@@ -306,6 +306,9 @@ const styles = {
         "&>h2": {
             flex: "0 0 fill-content"
         },
+        "& canvas": {
+            margin: 4,
+        },
         display: "flex",
         flexFlow: "row wrap",
         alignItems: "flex-end",
