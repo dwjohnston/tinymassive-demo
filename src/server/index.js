@@ -48,10 +48,19 @@ export default ({ clientStats }) => async (req, res) => {
     // Create a theme instance.
     const theme = createMuiTheme({
         palette: {
-            primary: green,
-            accent: red,
-            type: 'light',
-        },
+            primary: { main: '#bbdefb' },
+            secondary: { main: '#EF9A9A' },
+
+            text: {
+                primary: "#bbdefb",
+                secondary: "#bbdefb"
+            },
+
+            background: {
+                default: '#424242',
+                paper: '#424242',
+            }
+        }
     });
 
     const generateClassName = createGenerateClassName();

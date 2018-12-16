@@ -4,17 +4,18 @@ import Canvas from "..//canvas";
 import Controls from '..//controls';
 import SocketInfo from "../SocketPage";
 import NoSSR from "react-no-ssr";
+import { Card } from '@material-ui/core';
 const Main = ({ classes }) => {
     return (
         <main className={classes.root}>
 
-            <div className={classes.canvasContainer}>
+            <Card classes={{ root: classes.canvasContainer }}>
                 <NoSSR> <SocketInfo /></NoSSR>
                 <Canvas />
-            </div>
-            <div className={classes.controlContainer}>
+            </Card>
+            <Card elevation={0} className={classes.controlsContainer}>
                 <Controls />
-            </div>
+            </Card>
         </main>
     );
 };
@@ -24,16 +25,23 @@ const styles = {
         display: "flex",
         flexFlow: "column nowrap",
         alignItems: "stretch",
-        padding: 15,
+        padding: 0,
 
         maxWidth: 1080,
         margin: "auto",
 
+        color: "#bbdefb",
+
+    },
+
+    canvasContainer: {
+        backgroundColor: "#212121",
+        flex: "0 0 auto",
     },
 
     controlsContainer: {
         overflowY: "scroll",
-        flex: "1 0 auto",
+        flex: "1 1 auto",
     }
 };
 

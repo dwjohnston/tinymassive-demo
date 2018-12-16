@@ -15,8 +15,10 @@ export default ({
         <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js"></script>
 
         <style> 
-            body {
-                margin: 0
+            html, body, #react-root, main{
+                margin: 0; 
+                overflow: hidden; 
+                height: 100vh; 
             }
         </style> 
         ${styles}

@@ -24,19 +24,21 @@ class Slider extends Component {
 
     render() {
         const { classes, min, max, step, label, id } = this.props;
-        return <div className={classes.root}> <div className={classes.sliderWrapper}>  <MuiSlider
-            classes={{ root: classes.sliderRoot, container: classes.slider }}
-            vertical
-            value={this.state.value}
-            onChange={this.handleChange}
-            min={min}
-            max={max}
-            step={step}
-            aria-labelledby={`label-${id}`}
-        />
+        return <div className={classes.root}> <div className={classes.sliderWrapper}>
+            <MuiSlider
+                classes={{ root: classes.sliderRoot, container: classes.slider }}
+                vertical
+                value={this.state.value}
+                onChange={this.handleChange}
+                min={min}
+                max={max}
+                step={step}
+                aria-labelledby={`label-${id}`}
+                color="secondary"
+            />
         </div>
-        <Typography id={`value-${id}`}>{Number.parseFloat(this.state.value).toPrecision(3)}</Typography>
-        <Typography id={`label-${id}`}>{label}</Typography>
+        <Typography color="inherit" id={`value-${id}`}>{Number.parseFloat(this.state.value).toPrecision(3)}</Typography>
+        <Typography color="inherit" id={`label-${id}`}>{label}</Typography>
 
         </div >;
     }

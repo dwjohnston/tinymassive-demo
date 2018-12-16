@@ -104,11 +104,12 @@ class SocketPage extends Component {
 const styles = {
     root: {
         border: "solid 1px black",
-        fontSize: 8,
+        fontSize: 12,
         position: "fixed",
         top: 0,
         right: 0,
         backgroundColor: "white",
+        color: "#212121"
     },
     info: {
         display: "flex",
@@ -120,8 +121,8 @@ const styles = {
     },
 
     active: {
-        color: "bold",
-        fontWeight: "strong",
+        color: "green",
+        fontWeight: "stroboldng",
     },
 
     inactive: {

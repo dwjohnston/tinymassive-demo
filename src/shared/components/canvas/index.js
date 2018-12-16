@@ -15,6 +15,7 @@ import {
 } from "./calcFunctions";
 import { bikerMoveAction } from '../../actions/biker';
 import { moveBikerMain } from '../../actions/socket';
+import { FormControlLabel, Checkbox } from '@material-ui/core';
 
 //Size in pixels of the displays
 export const HEIGHT_LEFT = 9;
@@ -196,22 +197,30 @@ class Canvas extends Component {
             <canvas width="77" height="13" ref={this.ref} className={classes.fixed} />
 
             <div className={classes.checkboxes}>
-                <label htmlFor="displayTinyMassive"> Display TinyMassive</label>
-                <input
-                    type="checkbox"
-                    onChange={this.handleCheckboxChange}
-                    value="displayTinyMassive"
-                    id="displayTinyMassive"
-                    checked={this.state.displayTinyMassive}
+
+
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={this.state.displayTinyMassive}
+                            onChange={this.handleCheckboxChange}
+                            value="displayTinyMassive"
+                            color="primary"
+                        />
+                    }
+                    label="Display TinyMassive"
                 />
 
-                <label htmlFor="displayYours"> Display Yours</label>
-                <input
-                    type="checkbox"
-                    onChange={this.handleCheckboxChange}
-                    value="displayYours"
-                    id="displayYours"
-                    checked={this.state.displayYours}
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={this.state.displayYours}
+                            onChange={this.handleCheckboxChange}
+                            value="displayYours"
+                            color="primary"
+                        />
+                    }
+                    label=" Display Yours"
                 />
             </div>
             <div
@@ -254,13 +263,18 @@ const styles = {
         // top: 0,
         // right: 0,
         // left: 0,
+
+        "& h2": {
+            margin: 5,
+        }
     },
+
+
 
     checkboxes: {
         flex: "0 0 100%",
         display: "flex",
         flexFlow: "row nowrap",
-        justifyContent: "flex-end",
     },
 
     fixed: {
