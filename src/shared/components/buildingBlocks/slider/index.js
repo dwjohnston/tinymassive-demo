@@ -59,12 +59,13 @@ const styles = {
         display: "flex",
         flexFlow: "column nowrap",
         alignItems: "center",
+        height: 150,
 
     },
     sliderWrapper: {
         display: 'flex',
         height: "100%",
-        margin: 10,
+        margin: 5,
     },
     slider: {
         padding: '0px 22px',

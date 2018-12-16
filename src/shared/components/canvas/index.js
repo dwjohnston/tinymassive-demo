@@ -25,8 +25,8 @@ export const WIDTH_RIGHT = 38;
 
 //Size adjustment of our main display
 export const N_GRID_GRAIN = 1;  //We didn't end up using this functinality
-export const GRID_GRAIN_SIZE = 8;
-export const MAIN_GRAIN_SIZE = 8;
+export const GRID_GRAIN_SIZE = 6;
+export const MAIN_GRAIN_SIZE = 6;
 
 //The hidden pixels on the left display. 
 //There are some on the right display too - just to make it look a bit smoother
@@ -195,7 +195,7 @@ class Canvas extends Component {
 
             <canvas width="77" height="13" ref={this.ref} className={classes.fixed} />
 
-            <div>
+            <div className={classes.checkboxes}>
                 <label htmlFor="displayTinyMassive"> Display TinyMassive</label>
                 <input
                     type="checkbox"
@@ -215,22 +215,30 @@ class Canvas extends Component {
                 />
             </div>
             <div
-                className={classes.canvasContainer}
-                style={{ display: this.state.displayTinyMassive ? "flex" : "none" }} >
+                style={{ display: this.state.displayTinyMassive ? "block" : "none" }} >
                 <h2>Tiny Massive Display</h2>
-                <canvas width={WIDTH_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refMainLeftGrid} />
-                <canvas width={WIDTH_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refMainRightGrid} />
+
+                <div className={classes.canvasContainer}
+                >
+                    <canvas width={WIDTH_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refMainLeftGrid} />
+                    <canvas width={WIDTH_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refMainRightGrid} />
+                </div>
             </div>
+
 
             <div
-                className={classes.canvasContainer}
-                style={{ display: this.state.displayYours ? "flex" : "none" }}>
+                style={{ display: this.state.displayYours ? "block" : "none" }}>
                 <h2>Your Display</h2>
-                <canvas width={WIDTH_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refLeftGrid} />
-                <canvas width={WIDTH_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refRightGrid} />
+
+                <div className={classes.canvasContainer}
+                >
+
+                    <canvas width={WIDTH_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refLeftGrid} />
+                    <canvas width={WIDTH_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refRightGrid} />
+                </div>
             </div>
 
-        </div>;
+        </div >;
     }
 }
 
@@ -238,7 +246,21 @@ const styles = {
     root: {
         padding: "20px 0",
         "& canvas": {
-        }
+        },
+        display: "flex",
+        flexFlow: "row wrap",
+        justifyContent: "space-between",
+        // position: "fixed",
+        // top: 0,
+        // right: 0,
+        // left: 0,
+    },
+
+    checkboxes: {
+        flex: "0 0 100%",
+        display: "flex",
+        flexFlow: "row nowrap",
+        justifyContent: "flex-end",
     },
 
     fixed: {
@@ -249,7 +271,7 @@ const styles = {
 
     canvasContainer: {
         "&>h2": {
-            flex: "0 0 100%"
+            flex: "0 0 fill-content"
         },
         display: "flex",
         flexFlow: "row wrap",

@@ -83,27 +83,6 @@ class Controls extends Component {
                 }}
             />
 
-            {/* <Sine
-                groupName="sine2"
-                color="rgba(0, 200, 0, 0.2)"
-                inverse={true}
-                initValues={{
-                    speed: -0.1,
-                    freq: 1,
-                    c: 40,
-                    modFreq: 0.3,
-                    modAmp: 0,
-                    amp: 0.4,
-                }}
-                maxValues={{
-                    c: 77,
-                    freq: 5,
-                    modAmp: 3,
-
-                }}
-
-            /> */}
-
         </div>;
     }
 }
@@ -113,6 +92,7 @@ const styles = {
     root: {
         display: "flex",
         flexFlow: "row wrap",
+        alignItems: "flex-end",
     }
 };
 

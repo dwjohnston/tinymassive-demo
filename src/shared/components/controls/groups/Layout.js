@@ -6,21 +6,25 @@ const GroupLayout = ({ classes, label, children }) => {
         <div className={classes.root}>
             <h2>{label}</h2>
 
-            {children}
+            <div className={classes.container}>
+                {children}
+            </div>
         </div>
     );
 };
 
 const styles = {
     root: {
-        display: "flex",
-        height: 200,
-        border: "dotted 2px black"
+        "&>h2": {
+            textAlign: "center",
+            margin: "5px auto",
+        }
     },
 
-    modContainer: {
+    container: {
         display: "flex",
-        border: "solid 1px black",
+        flexFlow: "row wrap",
+        alignItems: "flex-end",
     }
 };
 

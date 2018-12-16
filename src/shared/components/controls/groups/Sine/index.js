@@ -70,35 +70,38 @@ class Controls extends Component {
         } = displayValues;
 
         return (
-            <Layout label="sine">
-                <div className={classes.root}>
+            <Layout label="Sine">
 
-                    {displayAmp && <Slider
-                        classes={{ root: classes.sliderRoot, container: classes.slider }}
-                        initialValue={amp}
-                        onChange={this.handleChange}
-                        min={0}
-                        max={mAmp}
-                        step={mAmp / STEP_RATIO}
-                        label="Amp"
-                        id="amp"
-                    />}
+                {displayAmp && <Slider
+                    classes={{ root: classes.sliderRoot, container: classes.slider }}
+                    initialValue={amp}
+                    onChange={this.handleChange}
+                    min={0}
+                    max={mAmp}
+                    step={mAmp / STEP_RATIO}
+                    label="Amp"
+                    id="amp"
+                />}
 
-                    {displayFreq && <Slider
-                        classes={{ root: classes.sliderRoot, container: classes.slider }}
-                        initialValue={freq}
-                        onChange={this.handleChange}
-                        min={mFreq / (FREQ_RATIO)}
-                        max={mFreq}
-                        step={mFreq / STEP_RATIO}
-                        label="Freq"
-                        id="freq"
-                    />}
+                {displayFreq && <Slider
+                    classes={{ root: classes.sliderRoot, container: classes.slider }}
+                    initialValue={freq}
+                    onChange={this.handleChange}
+                    min={mFreq / (FREQ_RATIO)}
+                    max={mFreq}
+                    step={mFreq / STEP_RATIO}
+                    label="Freq"
+                    id="freq"
+                />}
 
 
-                    <div className={classes.modContainer}>
 
-                        mod
+                <div className={classes.modContainer}>
+
+                    <h3>FM</h3>
+
+                    <div className={classes.container}>
+
                         {displayAmp && <Slider
                             classes={{ root: classes.sliderRoot, container: classes.slider }}
                             initialValue={modAmp}
@@ -123,9 +126,15 @@ class Controls extends Component {
 
                     </div>
 
-                    <div className={classes.modContainer}>
+                </div>
 
-                        add
+                <div className={classes.modContainer}>
+
+                    <h3>Additive </h3>
+
+                    <div className={classes.container}>
+
+
                         {displayAmp && <Slider
                             classes={{ root: classes.sliderRoot, container: classes.slider }}
                             initialValue={addAmp}
@@ -149,24 +158,19 @@ class Controls extends Component {
                         />}
 
                     </div>
-
-                    {displaySpeed && <Slider
-                        classes={{ root: classes.sliderRoot, container: classes.slider }}
-                        initialValue={speed}
-                        onChange={this.handleChange}
-                        min={-1 * mSpeed}
-                        max={mSpeed}
-                        step={mSpeed / STEP_RATIO}
-                        label="Speed"
-                        id="speed"
-                    />}
-
-                    {this.props.color && <div style={{
-                        backgroundColor: this.props.color,
-                        width: 20,
-                        height: 20,
-                    }} />}
                 </div>
+
+                {displaySpeed && <Slider
+                    classes={{ root: classes.sliderRoot, container: classes.slider }}
+                    initialValue={speed}
+                    onChange={this.handleChange}
+                    min={-1 * mSpeed}
+                    max={mSpeed}
+                    step={mSpeed / STEP_RATIO}
+                    label="Speed"
+                    id="speed"
+                />}
+
 
             </Layout>);
     }
@@ -174,14 +178,16 @@ class Controls extends Component {
 
 
 const styles = {
-    root: {
-        display: "flex",
-        border: "dotted 2px black"
-    },
 
     modContainer: {
+        border: "dotted 1px black",
+        "&>h3": {
+            margin: "5px auto",
+            textAlign: "center",
+        }
+    },
+    container: {
         display: "flex",
-        border: "solid 1px black",
     }
 };
 

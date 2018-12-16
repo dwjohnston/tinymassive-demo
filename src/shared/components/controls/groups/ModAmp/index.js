@@ -28,60 +28,71 @@ class ModAmp extends Component {
     }
     render() {
 
-        const { initValues = {}, maxValues = {}, displayValues = {}, classes } = this.props;
+        const { initValues = {}, maxValues = {}, displayValues = {}, classes, label } = this.props;
         const {
-            freq: initFreq = 2,
+            freq: initFreq = 1,
             amp: initAmp = 1,
             value: initValue = 0.5,
         } = initValues;
 
         const {
-            freq: maxFreq = 4,
+            freq: maxFreq = 1.5,
             amp: maxAmp = 1,
             value: maxValue = 1
         } = maxValues;
 
-        return <div className={classes.root}>
+        return (
+            <div className={classes.root}>
+                <h3>{label}</h3>
+
+                <div className={classes.container}>
+
+                    <Slider
+                        initialValue={initValue}
+                        onChange={this.handleChange}
+                        min={maxValue / PARAM_RATIO}
+                        max={maxValue}
+                        step={maxValue / PARAM_RATIO}
+                        label="value"
+                        id="value"
+                    />
 
 
+                    <Slider
+                        initialValue={initFreq}
+                        onChange={this.handleChange}
+                        min={maxFreq / PARAM_RATIO}
+                        max={maxFreq}
+                        step={maxFreq / PARAM_RATIO}
+                        label="freq"
+                        id="freq"
+                    />
 
-            <Slider
-                initialValue={initValue}
-                onChange={this.handleChange}
-                min={maxValue / PARAM_RATIO}
-                max={maxValue}
-                step={maxValue / PARAM_RATIO}
-                label="value"
-                id="value"
-            />
+                    <Slider
+                        initialValue={initAmp}
+                        onChange={this.handleChange}
+                        min={0}
+                        max={maxAmp}
+                        step={maxAmp / PARAM_RATIO}
+                        label="amp"
+                        id="amp"
+                    />
+                </div >
 
-
-            <Slider
-                initialValue={initFreq}
-                onChange={this.handleChange}
-                min={maxFreq / PARAM_RATIO}
-                max={maxFreq}
-                step={maxFreq / PARAM_RATIO}
-                label="freq"
-                id="freq"
-            />
-
-            <Slider
-                initialValue={initAmp}
-                onChange={this.handleChange}
-                min={0}
-                max={maxAmp}
-                step={maxAmp / PARAM_RATIO}
-                label="amp"
-                id="amp"
-            />
-        </div >;
+            </div>);
     }
 }
 
 const styles = {
+
     root: {
-        border: "dashed 1px red",
+        border: "dotted 1px black",
+        "&>h3": {
+            margin: "5px auto",
+            textAlign: "center",
+        }
+    },
+    container: {
         display: "flex",
         flexFlow: "row nowrap"
     },

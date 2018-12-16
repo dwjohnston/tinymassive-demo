@@ -1,5 +1,5 @@
 import React, {
-    Component,
+    Component, Fragment,
 } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { subscribeToTimer, subscribeToStatus, disconnect, joinQueue, subscribeToTakeControl, updateOut, subscribeToReceiveUpdate } from '../../services/socket';
@@ -58,18 +58,18 @@ class SocketPage extends Component {
     }
     render() {
 
-        const { wholeState, classes } = this.props;
+        const { wholeState, classes, debug } = this.props;
         const { status, timeLeft } = this.state;
-        return <div>
+        return <div className={classes.root}>
 
             <h3> Queue Info </h3>
 
             <div className={classes.info}>
-                <div>
+                <div className={status.active ? classes.active : classes.inactive}>
                     {status.active ? "ACTIVE - YOU'RE LIVE!" : "IN QUEUE"}
                 </div>
 
-                <div> <strong> Socket ID </strong> {this.state.id}</div>
+                {debug && <div> <strong> Socket ID </strong> {this.state.id}</div>}
                 <div>
                     <strong> Queue Position </strong>
                     {status.queuePosition}
@@ -84,36 +84,49 @@ class SocketPage extends Component {
                     <strong>Time till queue jump </strong>
                     {timeLeft}
                 </div>
+                {debug && <Fragment>
+                    <div>
+                        <strong>my state</strong>
+                        {oHash(this.props.wholeState)}
+                    </div>
 
-
-                <div>
-
-                    <strong>my state</strong>
-                    {oHash(this.props.wholeState)}
-                </div>
-
-                <div>
-                    <strong>algo state</strong>
-                    {oHash(this.state.algoState || {})}
-                </div>
-
-
+                    <div>
+                        <strong>algo state</strong>
+                        {oHash(this.state.algoState || {})}
+                    </div>
+                </Fragment>}
             </div>
 
-        </div>;
+        </div >;
     }
 }
 
 const styles = {
-    root: {},
+    root: {
+        border: "solid 1px black",
+        fontSize: 8,
+        position: "fixed",
+        top: 0,
+        right: 0,
+        backgroundColor: "white",
+    },
     info: {
         display: "flex",
-        flexFlow: "row wrap",
+        flexFlow: "column nowrap",
         "&>*": {
-            border: "solid 1px black",
-            padding: 5,
+            padding: 2,
 
         }
+    },
+
+    active: {
+        color: "bold",
+        fontWeight: "strong",
+    },
+
+    inactive: {
+        fontWeight: "bold",
+        color: "red",
     }
 };
 
@@ -125,6 +138,7 @@ const mapStateToProps = (
 ) => {
     return {
         wholeState: state.groups,
+        debug: false,
     };
 };
 

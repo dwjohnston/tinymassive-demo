@@ -43,7 +43,7 @@ class ColorGroup extends Component {
                 min={maxDegrade / PARAM_RATIO}
                 max={maxDegrade}
                 step={maxDegrade / PARAM_RATIO}
-                label="Degrade Rate"
+                label="Persistance"
                 id="degrade"
             />
 
@@ -65,7 +65,7 @@ class ColorGroup extends Component {
 
             <ModAmp
                 label="G"
-                id="b"
+                id="g"
                 sliderUpdate={this.handleChange}
                 maxValues={{
                     value: 255,
@@ -79,7 +79,7 @@ class ColorGroup extends Component {
 
             <ModAmp
                 label="B"
-                id="g"
+                id="b"
                 sliderUpdate={this.handleChange}
                 maxValues={{
                     value: 255,
