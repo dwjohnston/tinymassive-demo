@@ -77,6 +77,24 @@ function drawCanvasGrid(pixels, grid, yShift = 0, xShift = 0) {
     }
 }
 
+function drawTiny(context, toDrawLeft, toDrawRight, bikerGrid) {
+
+    for (let pixel of toDrawLeft) {
+        context.fillStyle = pixel.color;
+        context.fillRect(pixel.x, pixel.y, 1, 1);
+    }
+
+    for (let pixel of toDrawRight) {
+        context.fillStyle = pixel.color;
+        context.fillRect(pixel.x + WIDTH_LEFT, pixel.y, 1, 1);
+    }
+
+    for (let pixel of bikerGrid) {
+        context.fillStyle = pixel.color;
+        context.fillRect(pixel.x, pixel.y, 1, 1);
+    }
+}
+
 
 class Canvas extends Component {
     constructor(props) {
@@ -176,6 +194,8 @@ class Canvas extends Component {
                         bikerGrid[0].x >= WIDTH_LEFT ? WIDTH_LEFT * -1 : 0
                     );
                     drawCanvasGrid(toDrawLeft, contextMainLeft);
+
+                    drawTiny(context, toDrawLeft, toDrawRight, bikerGrid);
 
                 }
                 u++;
