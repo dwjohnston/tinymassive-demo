@@ -1,7 +1,9 @@
 import openSocket from 'socket.io-client';
 
 
-const socket = openSocket('http://localhost:8000');
+const socket = openSocket();
+
+console.info(socket);
 
 export function subscribeToTimer(cb) {
     socket.on('timerUpdate', timestamp => cb(null, timestamp));

@@ -35,6 +35,8 @@ class SocketPage extends Component {
                 algoState: data
             })
 
+
+
             this.props.updateForeign(data);
         });
 

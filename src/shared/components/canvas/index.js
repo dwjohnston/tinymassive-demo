@@ -138,7 +138,6 @@ class Canvas extends Component {
             updateBiker(newBikerObj);
 
             drawCanvasGrid(toDrawRight, contextRight);
-            console.log(bikerGrid);
             drawCanvasGrid(
                 bikerGrid,
                 bikerGrid[0].x < WIDTH_LEFT ? contextLeft : contextRight,

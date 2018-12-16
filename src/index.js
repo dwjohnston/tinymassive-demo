@@ -3,10 +3,10 @@ import helmet from 'helmet';
 import shrinkRay from 'shrink-ray';
 import { join } from 'path';
 import { log } from 'winston';
+
 import http from "http";
 import socketio from "socket.io";
 import oHash from "object-hash";
-const io = socketio();
 
 
 /**
@@ -62,7 +62,7 @@ app.use(helmet());
 app.use(shrinkRay({
     filter: () => !isDevelopment,
 }));
-app.set('port', process.env.PORT || 3000);
+//app.set('port', process.env.PORT || 3000);
 
 if (isDevelopment) {
     configureDevelopment(app);
@@ -70,8 +70,14 @@ if (isDevelopment) {
     configureProduction(app);
 }
 
-app.listen(app.get('port'), () => log('info', `Server listening on port ${app.get('port')}...`));
+// app.listen(app.get('port'), () => log('info', `Server listening on port ${app.get('port')}...`));
 
+const server = http.createServer(app);
+const io = socketio(server);
+server.listen(process.env.PORT || 3000, () => {
+    log('info', `Server listening on port ${app.get('port')}...`)
+    console.log("listening");
+});
 
 let activeClient = null;
 let nClients = 0;
@@ -175,4 +181,4 @@ io.on('connection', function (socket) {
 
 
 
-io.listen(8000);
+// io.listen(process.env.PORT || 3000);
