@@ -132,15 +132,35 @@ export function calcForModGridOld(
     return array;
 }
 
+
+export function calcAll(t, sine, color, biker, bikerObj) {
+    const toDrawLeft = calcForModGrid(t, sine, color, HEIGHT_LEFT, WIDTH_LEFT, true);
+    const lastPixel = toDrawLeft[toDrawLeft.length - 1];
+    const phaseOffset = calcPhaseOffset(lastPixel.y);
+    const toDrawRight = calcForModGrid(t, sine, color, HEIGHT_RIGHT, WIDTH_RIGHT, false, phaseOffset);
+    const bikerGrid = [];
+    const newBikerObj = calcBiker(t, biker, bikerObj, toDrawLeft, toDrawRight);
+    bikerGrid.push(bikerObj);
+
+    return {
+        bikerGrid,
+        toDrawLeft,
+        toDrawRight,
+        newBikerObj,
+    }
+}
+
 export function calcPhaseOffset(y) {
     return Math.sin(((y) / (HEIGHT_LEFT - 1)) * Math.PI) + Math.PI;
 }
 
-export function calcBiker(t, bikerGroup, bikerObj, grid) {
+export function calcBiker(t, bikerGroup, bikerObj, gridLeft, gridRight) {
     const xPos = bikerObj.x;
 
-    const gridA = grid[(Math.floor(xPos + WIDTH_RIGHT) + 1) % (WIDTH_RIGHT)];
-    const gridB = grid[Math.floor(xPos + WIDTH_RIGHT) % (WIDTH_RIGHT)];
+    let grid = [...gridLeft, ...gridRight];
+
+    const gridA = grid[(Math.floor(xPos + WIDTH_RIGHT + WIDTH_LEFT) + 1) % (WIDTH_RIGHT + WIDTH_LEFT)];
+    const gridB = grid[Math.floor(xPos + WIDTH_RIGHT + WIDTH_LEFT) % (WIDTH_RIGHT + WIDTH_LEFT)];
     const vector = (gridA.y - gridB.y) / 1;
 
     let dx, dy, y, color;
@@ -160,7 +180,7 @@ export function calcBiker(t, bikerGroup, bikerObj, grid) {
 
     return {
 
-        x: ((bikerObj.x + dx + WIDTH_RIGHT) % WIDTH_RIGHT),
+        x: ((bikerObj.x + dx + WIDTH_RIGHT + WIDTH_LEFT) % (WIDTH_RIGHT + WIDTH_LEFT)),
         y: (y || bikerObj.y - dy),
         dx: dx,
         dy: dy,
@@ -198,7 +218,7 @@ export function calcForModGrid(
                 group.speed * t * N_GRID_GRAIN,
                 (modAmp),
                 modFreq / N_GRID_GRAIN,
-                //phaseOffset
+                phaseOffset
             );
 
 
@@ -216,14 +236,14 @@ export function calcForModGrid(
             adjustAmp(i, addAmp, adjustedHeight),
             addFreq / N_GRID_GRAIN,
             //0
-            //phaseOffset
+            phaseOffset
         );
         const fm = sineAdjust(
             group.speed * t * N_GRID_GRAIN,
             i,
             adjustAmp(i, amp, adjustedHeight),
             adjustedSine / N_GRID_GRAIN,
-            //phaseOffset
+            phaseOffset
         );
 
         const y = Math.ceil(

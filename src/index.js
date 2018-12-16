@@ -153,7 +153,7 @@ io.on('connection', function (socket) {
         console.log("update algo", socket.id);
         if (socket === activeClient) {
             console.log("update algo - do update", oHash(data));
-            this.currentState = data;
+            currentState = data;
             socket.emit("receive update", data);
             socket.broadcast.emit("receive update", data);
         }

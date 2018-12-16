@@ -10,9 +10,11 @@ import {
     getPixels,
     calcPhaseOffset,
     calcBiker,
+    calcAll,
 
 } from "./calcFunctions";
 import { bikerMoveAction } from '../../actions/biker';
+import { moveBikerMain } from '../../actions/socket';
 
 //Size in pixels of the displays
 export const HEIGHT_LEFT = 9;
@@ -50,20 +52,27 @@ function clearCanvas(small, control, color, ...grids) {
         c.a = Math.pow(Math.abs(control.speed), 1.8) / color.degrade;
         clearColor = c.css;
     }
-    small.fillStyle = clearColor;
-    //large.fillStyle = "rgba(0, 0, 0, 0.01)";
-    small.fillRect(0, 0, 77, 13);
+
+    if (small) {
+        small.fillStyle = clearColor;
+        small.fillRect(0, 0, 77, 13);
+    }
+
     grids.forEach(grid => {
         grid.fillStyle = clearColor;
         grid.fillRect(0, 0, 770, 130);
     });
-    //large.fillRect(0, 0, 770, 130);
 }
 
-function drawCanvasGrid(pixels, grid, yShift = 0) {
+function drawCanvasGrid(pixels, grid, yShift = 0, xShift = 0) {
     for (let pixel of pixels) {
         grid.fillStyle = pixel.color;
-        grid.fillRect(pixel.x * GRID_GRAIN_SIZE, (pixel.y + yShift) * GRID_GRAIN_SIZE, GRID_GRAIN_SIZE, -1 * GRID_GRAIN_SIZE);
+        grid.fillRect(
+            (pixel.x + xShift) * GRID_GRAIN_SIZE,
+            (pixel.y + yShift) * GRID_GRAIN_SIZE,
+            GRID_GRAIN_SIZE,
+            -1 * GRID_GRAIN_SIZE
+        );
     }
 }
 
@@ -88,7 +97,8 @@ class Canvas extends Component {
 
     shouldComponentUpdate(prevProps, prevState) {
         //Important
-        if (prevState.displayTinyMassive != this.state.displayTinyMassive || prevState.displayYours != this.state.displayYours) {
+        if (prevState.displayTinyMassive != this.state.displayTinyMassive
+            || prevState.displayYours != this.state.displayYours) {
             return true;
         }
         return false;
@@ -110,37 +120,72 @@ class Canvas extends Component {
         const contextRight = this.refRightGrid.current.getContext("2d");
 
         let t = 0;
+        let u = 0;
 
         function draw() {
             //Clear canvases
 
-            const { color, sine, biker, socketData, bikerObj, updateBiker } = this.props;
-            clearCanvas(context, sine, color, contextRight, contextLeft);
+            const { color, sine, biker, bikerObj, updateBiker } = this.props;
+            clearCanvas(null, sine, color, contextRight, contextLeft);
 
-            const arrayGridLeft = [];
-            const arrayGridRight = [];
-
-            arrayGridLeft.push(...calcForModGrid(t, sine, color, HEIGHT_LEFT, WIDTH_LEFT, true));
-            const lastPixel = arrayGridLeft[arrayGridLeft.length - 1];
-            const phaseOffset = calcPhaseOffset(lastPixel.y);
-            arrayGridRight.push(...calcForModGrid(t, sine, color, HEIGHT_RIGHT, WIDTH_RIGHT, false, phaseOffset));
-            const bikerGrid = [];
-            const newBikerObj = calcBiker(t, biker, bikerObj, arrayGridRight);
-            bikerGrid.push(bikerObj);
+            const { newBikerObj, toDrawRight, bikerGrid, toDrawLeft } = calcAll(
+                t,
+                sine,
+                color,
+                biker,
+                bikerObj
+            );
             updateBiker(newBikerObj);
 
-            const toDrawRight = [...arrayGridRight];
-            const toDrawLeft = [...arrayGridLeft];
-
             drawCanvasGrid(toDrawRight, contextRight);
-            drawCanvasGrid(bikerGrid, contextRight, -1);
+            console.log(bikerGrid);
+            drawCanvasGrid(
+                bikerGrid,
+                bikerGrid[0].x < WIDTH_LEFT ? contextLeft : contextRight,
+                -1,
+                bikerGrid[0].x >= WIDTH_LEFT ? WIDTH_LEFT * -1 : 0
+            );
             drawCanvasGrid(toDrawLeft, contextLeft);
 
             t++;
             window.requestAnimationFrame(draw);
         }
 
+        function drawMain() {
+            if (this.props.socketData && this.props.socketData.sine1) {
+                const { color, sine1, biker } = this.props.socketData;
+                const { updateBikerMain, socketBikerObject } = this.props;
+                clearCanvas(context, sine1, color, contextMainLeft, contextMainRight);
+                if (sine1) {
+                    const { newBikerObj, toDrawRight, bikerGrid, toDrawLeft } = calcAll(
+                        u,
+                        sine1,
+                        color,
+                        biker,
+                        socketBikerObject
+                    );
+
+                    updateBikerMain(newBikerObj);
+
+                    drawCanvasGrid(toDrawRight, contextMainRight);
+
+                    drawCanvasGrid(
+                        bikerGrid,
+                        bikerGrid[0].x < WIDTH_LEFT ? contextMainLeft : contextMainRight,
+                        -1,
+                        bikerGrid[0].x >= WIDTH_LEFT ? WIDTH_LEFT * -1 : 0
+                    );
+                    drawCanvasGrid(toDrawLeft, contextMainLeft);
+
+                }
+                u++;
+            }
+            window.requestAnimationFrame(drawMain);
+        }
+
         draw = draw.bind(this);
+        drawMain = drawMain.bind(this);
+        window.requestAnimationFrame(drawMain);
         window.requestAnimationFrame(draw);
     }
 
@@ -224,13 +269,15 @@ const mapStateToProps = (
         biker: state.groups.biker,
         bikerObj: state.biker,
         color: state.groups.color,
-        socketData: state.socket,
+        socketData: state.socket.data,
+        socketBikerObject: state.socketBiker,
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        updateBiker: bikerObj => dispatch(bikerMoveAction(bikerObj))
+        updateBiker: bikerObj => dispatch(bikerMoveAction(bikerObj)),
+        updateBikerMain: bikerObj => dispatch(moveBikerMain(bikerObj))
     };
 };
 export default connect(
