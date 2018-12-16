@@ -1,4 +1,4 @@
-FROM node:9.11-alpine as builder
+FROM node:9.11 as builder
 RUN node -v 
 RUN python -V
 RUN apt update

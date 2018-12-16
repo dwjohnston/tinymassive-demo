@@ -94,7 +94,7 @@ let currentState = null;
 function updateStatuses() {
     console.log("update status", clients.length);
 
-    clients.forEach((client, i) => {
+    clients.filter(c => !!(c)).forEach((client, i) => {
         console.log(client.id, "::", i)
         if (i === 0) {
             console.log("active: ", client.id);
@@ -106,15 +106,16 @@ function updateStatuses() {
             });
 
 
-            if (activeClient !== client) {
+            if (activeClient !== client || clients.length < 2) {
                 activeClient = client;
                 client.emit("take control");
                 timeLeft = 30;
+                clearInterval(interval);
                 interval = setTimeout(() => {
                     const c = clients.shift();
                     clients.push(c);
-                    updateStatuses();
                     timeLeft = 30;
+                    updateStatuses();
 
                 }, 30000);
             }
@@ -150,6 +151,7 @@ io.on('connection', function (socket) {
         clients.push(socket);
 
         socket.emit("receive update", currentState);
+
         updateStatuses();
 
     });
