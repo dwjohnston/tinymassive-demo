@@ -241,7 +241,6 @@ class Canvas extends Component {
 
                 <div className={classes.canvasContainer}
                 >
-
                     <canvas width={WIDTH_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_LEFT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refLeftGrid} />
                     <canvas width={WIDTH_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} height={HEIGHT_RIGHT * N_GRID_GRAIN * GRID_GRAIN_SIZE} ref={this.refRightGrid} />
                 </div>
@@ -258,7 +257,7 @@ const styles = {
         },
         display: "flex",
         flexFlow: "row wrap",
-        justifyContent: "space-between",
+        justifyContent: "space-around",
         // position: "fixed",
         // top: 0,
         // right: 0,

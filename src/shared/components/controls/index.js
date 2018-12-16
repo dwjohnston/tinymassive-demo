@@ -11,19 +11,37 @@ import Sine from './groups/Sine';
 import Biker from './groups/Biker';
 import { subscribeToTimer } from '../../services/socket';
 import Color from './groups/Color';
+import { FormControlLabel, Checkbox, Button } from '@material-ui/core';
+import { doRandom } from '../../actions/random';
 
 
 
 class Controls extends Component {
     constructor(props) {
         super(props);
-        this.state = { value: props.value };
+        this.state = { value: props.value, doRandom: true };
+        this.interval = window.setInterval(() => {
+            this.props.doRandom()
+        }, 30000);
+    }
 
-        // subscribeToTimer((err, timestamp) => {
-        //     this.setState({
-        //         ts: timestamp
-        //     });
-        // })
+
+    handleCheckboxChange = (e) => {
+        this.setState({
+            [e.target.value]: !this.state[e.target.value]
+        }, () => {
+            if (!this.state.doRandom && this.interval) {
+                window.clearInterval(this.interval);
+            }
+
+            else if (this.state.doRandom) {
+                this.interval = window.setInterval(() => {
+                    this.props.doRandom()
+                }, 30000);
+            }
+        });
+
+
     }
 
     handleChange = (id, v) => {
@@ -41,6 +59,7 @@ class Controls extends Component {
         return <div className={classes.root}>
             {this.state.ts}
             <Sine
+
                 groupName="sine1"
                 color="rgba(200, 0, 0, 0.2)"
                 initValues={{
@@ -64,6 +83,27 @@ class Controls extends Component {
 
             />
 
+            <div className={classes.randomBox}>
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={this.state.doRandom}
+                            onChange={this.handleCheckboxChange}
+                            value="doRandom"
+                            color="primary"
+                        />
+                    }
+                    label="Random every 30 seconds"
+                />
+
+
+                <Button color="primary" onClick={this.props.doRandom} variant="contained">
+                    Random now!
+                </Button>
+
+
+            </div>
+
             <Biker groupName="biker"
                 initValues={{
                     weight: 0.05,
@@ -71,7 +111,7 @@ class Controls extends Component {
                 }}
 
                 maxValues={{
-                    speed: 0.3,
+                    speed: 0.5,
                     weight: 0.05,
                 }}
 
@@ -83,6 +123,9 @@ class Controls extends Component {
                 }}
             />
 
+
+
+
         </div>;
     }
 }
@@ -93,6 +136,10 @@ const styles = {
         display: "flex",
         flexFlow: "row wrap",
         alignItems: "flex-end",
+    },
+    randomBox: {
+        display: "flex",
+        flexFlow: "column nowrap",
     }
 };
 
@@ -109,7 +156,9 @@ const mapStateToProps = (
 
 const mapDispatchToProps = dispatch => {
     return {
-        sliderUpdate: (n, v) => dispatch(sliderUpdate(n, v))
+        sliderUpdate: (n, v) => dispatch(sliderUpdate(n, v)),
+
+        doRandom: () => dispatch(doRandom())
     };
 };
 export default connect(

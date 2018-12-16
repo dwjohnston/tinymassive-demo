@@ -12,6 +12,9 @@ import {
 
 import xolor from "xolor";
 
+const SPLASH_LENGTH = 30;
+const SPLASH_DURATION = 0.2;
+
 function calcGridLeft(t, group) {
     let pixels = calcForModGrid(t, group, HEIGHT_LEFT, WIDTH_LEFT, true);
 }
@@ -138,15 +141,13 @@ export function calcAll(t, sine, color, biker, bikerObj) {
     const lastPixel = toDrawLeft[toDrawLeft.length - 1];
     const phaseOffset = calcPhaseOffset(lastPixel.y);
     const toDrawRight = calcForModGrid(t, sine, color, HEIGHT_RIGHT, WIDTH_RIGHT, false, phaseOffset);
-    const bikerGrid = [];
-    const newBikerObj = calcBiker(t, biker, bikerObj, toDrawLeft, toDrawRight);
-    bikerGrid.push(bikerObj);
+    const bikerGrid = calcBiker(t, biker, bikerObj, toDrawLeft, toDrawRight);
 
     return {
         bikerGrid,
         toDrawLeft,
         toDrawRight,
-        newBikerObj,
+        newBikerObj: bikerGrid[0],
     }
 }
 
@@ -164,10 +165,13 @@ export function calcBiker(t, bikerGroup, bikerObj, gridLeft, gridRight) {
     const vector = (gridA.y - gridB.y) / 1;
 
     let dx, dy, y, color;
+    let colorFade;
+    const extras = [];
     if (bikerObj.y < gridB.y || bikerObj.vector > vector) {
         dx = bikerObj.dx;
         dy = bikerObj.dy - bikerGroup.weight;
         color = "rgba(200, 255, 200, 1)"
+        colorFade = 0;
     }
     else {
         const angle = Math.atan(vector);
@@ -176,17 +180,27 @@ export function calcBiker(t, bikerGroup, bikerObj, gridLeft, gridRight) {
 
         y = gridB.y;
         color = "rgba(200, 200, 255, 1)"
+
+        // colorFade = (bikerObj.colorFade && bikerObj.colorFade - 0.2) || 1;
+        // for (let i = 0; i < SPLASH_LENGTH; i++) {
+        //     extras.push({
+        //         y,
+        //         x: xPos - SPLASH_LENGTH / 2 + i,
+        //         color: `rgba(200, 200, 255, ${1 - (colorFade * 0.2 * Math.abs(SPLASH_LENGTH / 2 - i))}`
+        //     })
+        // }
     }
 
-    return {
+    return [{
 
         x: ((bikerObj.x + dx + WIDTH_RIGHT + WIDTH_LEFT) % (WIDTH_RIGHT + WIDTH_LEFT)),
         y: (y || bikerObj.y - dy),
         dx: dx,
         dy: dy,
+        colorFade,
         color: color,
         vector: vector,
-    }
+    }, ...extras]
 }
 
 export function calcForModGrid(

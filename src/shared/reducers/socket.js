@@ -25,7 +25,6 @@ export const socketReducer = (state = initialState, action) => {
     switch (action.type) {
 
     case RECEIVE_DATA: {
-        console.log(action);
         return {
             data: action.payload
         };

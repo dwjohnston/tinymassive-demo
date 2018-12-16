@@ -14,7 +14,7 @@ const Main = ({ classes }) => {
                 <Canvas />
             </Card>
             <Card elevation={0} className={classes.controlsContainer}>
-                <Controls />
+                <NoSSR>   <Controls /></NoSSR>
             </Card>
         </main>
     );
@@ -27,7 +27,6 @@ const styles = {
         alignItems: "stretch",
         padding: 0,
 
-        maxWidth: 1080,
         margin: "auto",
 
         color: "#bbdefb",

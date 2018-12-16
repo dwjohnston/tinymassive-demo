@@ -13,12 +13,15 @@ const GroupLayout = ({ classes, label, children }) => {
     );
 };
 
-const styles = {
+const styles = theme => ({
     root: {
         "&>h2": {
             textAlign: "center",
             margin: "5px auto",
-        }
+        },
+
+        margin: "0 10px",
+        border: `solid 1px ${theme.palette.primary.main}`,
     },
 
     container: {
@@ -26,7 +29,7 @@ const styles = {
         flexFlow: "row wrap",
         alignItems: "flex-end",
     }
-};
+});
 
 
 export default withStyles(styles)(

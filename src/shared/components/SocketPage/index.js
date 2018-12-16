@@ -30,7 +30,6 @@ class SocketPage extends Component {
 
         subscribeToReceiveUpdate((err, data) => {
 
-            console.log("receive update", data);
             this.setState({
                 algoState: data
             })

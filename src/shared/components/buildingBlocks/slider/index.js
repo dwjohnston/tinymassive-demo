@@ -6,13 +6,31 @@ import MuiSlider from '@material-ui/lab/Slider';
 import { Typography } from '@material-ui/core';
 
 import PropTypes from 'prop-types';
-import { round } from "davids-toolbox";
+import { randomStep } from "davids-toolbox";
+import { connect } from 'react-redux';
+
 class Slider extends Component {
     constructor(props) {
         super(props);
-        this.state = { value: props.initialValue };
 
-        props.onChange(props.id, props.initialValue);
+        const value = randomStep(this.props.min, this.props.max, this.props.step);
+        this.state = { value: value };
+
+        props.onChange(props.id, value);
+    }
+
+
+    componentDidUpdate(prevProps) {
+        if (this.props.random != prevProps.random) {
+            const value = randomStep(this.props.min, this.props.max, this.props.step);
+            this.setState({
+                value
+            });
+
+            this.props.onChange(this.props.id, value);
+
+
+        }
     }
 
     handleChange = (e, v) => {
@@ -81,4 +99,22 @@ const styles = {
 
 
 
-export default withStyles(styles)(Slider);
+
+const mapStateToProps = (
+    state,
+    ownProps
+) => {
+    return {
+        random: state.random
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+
+    };
+};
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(withStyles(styles)(Slider));
